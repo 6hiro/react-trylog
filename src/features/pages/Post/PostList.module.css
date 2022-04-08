@@ -1,0 +1,34 @@
+.posts {
+  border-radius: 2%;
+  width: 360px;
+  overflow-wrap: break-word;
+  padding: 8px;
+  margin: 0 auto;
+}
+
+.posts_list_container .navigation {
+  display: flex;
+  justify-content: space-between;
+  /* color: rgb(88, 94, 78); */
+  color: #f4f8fb;
+  width: 200px;
+  margin: 0 auto;
+  /* margin-top: 60px; */
+  padding: 10px;
+}
+/* .container .search_roadmap {
+  text-align: center;
+  width: 380px;
+  margin: 20px auto;
+} */
+.posts_list_container .navigation .user_roadmaps {
+  cursor: pointer;
+}
+.posts_list_container .navigation .roadmaps {
+  cursor: pointer;
+}
+.posts_list_container .navigation .is_user_roadmaps {
+  border-bottom: solid;
+  color: #f4f8fb;
+  border-color: #f4f8fb;
+}

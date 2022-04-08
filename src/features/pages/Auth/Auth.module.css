@@ -1,0 +1,54 @@
+.auth_page {
+  background-color: #fff;
+  padding: 1rem 0;
+  width: 100%;
+  margin-top: 6rem;
+  /* margin-bottom: 5rem; */
+  /* margin: 8% auto 0 auto; */
+  /* border-radius: 0 0 0; */
+}
+.auth_form {
+  width: 320px;
+  margin: 0 auto;
+}
+.auth_title {
+  font-size: 1.5rem;
+  /* font-family: sans-serif; */
+  font-weight: bold;
+  /* color: #3b72ff; */
+  color: #3a456b;
+  text-align: center;
+}
+.auth_message {
+  text-align: center;
+  color: #333;
+  background-color: #a1fcaf;
+  padding: 1rem 0;
+  /* font-size: 1.2rem; */
+}
+.auth_error {
+  color: #ff00ff;
+  /* font-weight: 600; */
+  text-align: center;
+  margin-top: 10px;
+}
+.auth_regiter {
+  right: 1px;
+}
+.auth_text {
+  text-align: center;
+}
+.auth_button {
+  text-align: right;
+  margin-top: 10px;
+}
+.auth_span {
+  color: #00f;
+  /* font-weight: 600; */
+  cursor: pointer;
+}
+.auth_progress {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}

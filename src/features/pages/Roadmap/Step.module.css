@@ -1,0 +1,130 @@
+.container {
+  margin: 0 auto;
+  min-height: 100%;
+  display: grid;
+  grid-template:
+    "header header header header header" 10px
+    ".... left .... right ...." 1fr
+    /80px 1fr 10px 1fr 80px;
+}
+.container .header {
+  grid-area: "header";
+}
+.container .new_step .roadmap {
+  background: #f4f8fb;
+  border-radius: 5px;
+  /* width: 360px; */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  margin: 5px auto;
+}
+.container .new_step .roadmap .roadmap_overview {
+  padding: 10px;
+  /* text-indent: 0.5em; */
+}
+.container .new_step .roadmap_title {
+  color: #23204b;
+  font-size: 20px;
+  font-weight: bolder;
+  padding: 10px;
+  padding-bottom: 0;
+}
+.container .new_step {
+  grid-area: left;
+  /* margin-top: 40px; */
+  width: 360px;
+  margin: 5px auto;
+}
+.container .new_step .new_step_button {
+  cursor: pointer;
+  background: #fff;
+  border-radius: 5px;
+  margin: 0 auto 10px auto;
+  padding: 5px 0;
+  color: #3b72ff;
+  text-align: center;
+}
+.container .step_list {
+  grid-area: right;
+  width: 360px;
+  margin: 20px auto;
+}
+.container .step_list .edit_order {
+  cursor: pointer;
+  background: #fff;
+  border-radius: 5px;
+  margin: 0 5px 10px auto;
+  padding: 5px;
+  width: 140px;
+  color: #3b72ff;
+  text-align: center;
+}
+.container .step_list .down_icon {
+  text-align: center;
+}
+.container .step_list .step {
+  background: #f4f8fb;
+  backdrop-filter: blur(5px);
+  margin: 5px;
+  /* border-radius: 5px; */
+  border-radius: 0.3rem 1rem;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.container .step_list .step .step_header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  padding-bottom: 0;
+}
+.container .step_list .step .step_header .step_order {
+  font-weight: 600;
+}
+.container .step_list .step .step_header .progress {
+  font-weight: 600;
+  /* text-align: right; */
+}
+.container .step_list .step .step_header .progress .left_untouched {
+  color: red;
+}
+.container .step_list .step .step_header .progress .going {
+  color: green;
+}
+.container .step_list .step .step_header .progress .is_completed {
+  color: blue;
+}
+.container .step_list .left_untouched_step {
+  background: #ffd5ec;
+}
+.container .step_list .going_step {
+  background: #cbffd3;
+}
+.container .step_list .step .aditional_elements {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 10px;
+}
+.container .step_list .step .aditional_elements .space {
+  margin: 28px;
+}
+.container .step_list .step .to_learn {
+  margin: 20px;
+  margin-bottom: 0;
+  white-space: pre-wrap;
+}
+@media screen and (max-width: 800px) {
+  .container {
+    grid-template:
+      "header" 10px
+      "left" 1fr
+      "right";
+  }
+}
+@media screen and (min-width: 1100px) {
+  .container {
+    grid-template:
+      "header header header header header" 10px
+      ".... left .... right ...." 1fr
+      /300px 1fr 10px 1fr 300px;
+  }
+}

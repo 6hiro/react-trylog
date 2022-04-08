@@ -1,0 +1,18 @@
+.profiles .profiles_title {
+  /* font-weight: 600; */
+  font-size: 20px;
+  margin-bottom: 30px;
+  font-weight: bolder;
+  text-align: center;
+  color: #0e0e0e;
+  font-weight: bold;
+}
+.profiles .profile_link {
+  display: flex;
+}
+.profiles .profile_link .nick_name {
+  padding: 4px 15px;
+  /* width: 250px; */
+  font-size: 18px;
+  /* font-weight: 700; */
+}

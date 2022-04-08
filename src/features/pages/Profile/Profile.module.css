@@ -1,0 +1,88 @@
+.profile {
+  /* box-shadow: 0px 0px 6px rgba(255, 255, 255, 1.5); */
+  width: 360px;
+  padding: 15px 0;
+  margin: 10px auto;
+  /* background: #fff; */
+}
+.profile .profile_header {
+  display: flex;
+  color: #fff;
+  padding: 0 0 10px 0;
+}
+.profile .profile_header .nick_name {
+  padding: 0px 15px;
+  width: 250px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.profile .profile_header .nick_name .user_name {
+  font-size: 1.2rem;
+}
+.profile .follow_button {
+  width: 200px;
+  margin: 0 6px 0 auto;
+  text-align: center;
+  background: #f4f8fb;
+  /* background: rgba(230, 230, 230, 0.6); */
+  border-radius: 20px;
+}
+
+.profile .edit_profile {
+  height: 30px;
+  width: 200px;
+  padding-top: 5px;
+  margin: 0 6px 0 auto;
+  text-align: center;
+  /* background: #f4f8fb; */
+  background: rgba(230, 230, 230, 0.6);
+  border-radius: 20px;
+}
+
+.profile .follow {
+  margin: 20px 0;
+  font-weight: 700;
+  text-align: right;
+  color: #fff;
+}
+.profile .follow .following {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.profile .follow .follower {
+  margin-left: 10px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.profile .navigation {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px 10px 20px;
+  color: #fff;
+}
+.profile .navigation .user_posts {
+  cursor: pointer;
+}
+
+.profile .navigation .favorite_posts {
+  cursor: pointer;
+}
+
+.profile .navigation .is_user_post {
+  border-bottom: solid;
+  color: #fff;
+  border-color: #fff;
+}
+.profile .posts {
+  width: 340px;
+  margin: 0 auto;
+}
+/* .profile .pagination {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    font-weight: bolder;
+    cursor: pointer;
+} */

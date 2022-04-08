@@ -1,0 +1,35 @@
+.add_roadmap {
+  background-color: #fff;
+  padding: 5px 0;
+  /* border-radius: 2rem 0; */
+}
+.title {
+  text-align: center;
+  /* margin-top: 50px; */
+  /* color: #fff; */
+}
+.add_post {
+  background-color: #fff;
+  text-align: center;
+  width: 320px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.post_error {
+  color: #ff00ff;
+  text-align: center;
+  margin: 10px;
+}
+.post_button {
+  text-align: right;
+}
+.notes {
+  color: #6e6e6e;
+  text-align: left;
+}
+.postProgress {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}

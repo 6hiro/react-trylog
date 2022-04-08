@@ -1,0 +1,19 @@
+.getMorePostBtn {
+  cursor: pointer;
+  text-align: center;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 15px;
+  /* background: #3b72ff; */
+  background: #3364df;
+  border-radius: 10px;
+  padding: 0.25rem 0.5rem;
+  transition: 0.3s;
+  width: 340px;
+  margin: 15px auto 0 auto;
+}
+.getMorePostBtn:hover {
+  /* background: #3364df; */
+  background: #3b72ff;
+}
