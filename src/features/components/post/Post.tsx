@@ -185,7 +185,15 @@ const Post: React.FC<{
                     > 
                         <div>
                             {/* <Avatar>{post.postedBy.name.slice(0, 1)}</Avatar> */}
-                            <Avatar alt="who?" src={post.profile.img} />
+                            {/* <Avatar alt="who?" src={post.profile.img} /> */}
+                            {
+                                post.profile?.img
+                                ? 
+                                <Avatar alt="who?" src={post.profile.img}/>
+                                :
+                                <Avatar /> 
+                                // <Avatar></Avatar>
+                            }
                         </div>
                     </Link>
                 </div>

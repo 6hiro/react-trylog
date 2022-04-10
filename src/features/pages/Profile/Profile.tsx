@@ -34,6 +34,7 @@ import Post from '../../components/post/Post';
 import EditProfile from "../../components/profile/EditProfile";
 import GetMorePost from '../../components/post/GetMorePost';
 import styles from './Profile.module.css'
+import axios from 'axios';
 
 const Profile: React.FC = () => {
     let navigate = useNavigate();
@@ -46,12 +47,13 @@ const Profile: React.FC = () => {
     const posts = useSelector(selectPosts);
 
     const handlerFollowed = async () => {
-        const result = await dispatch(fetchAsyncFollowUnFollow(profile.user.id));  
+        const result = await dispatch(fetchAsyncFollowUnFollow(profile?.user.id));  
     };
 
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetProfile(id));
+            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
             await dispatch(fetchAsyncGetUserPosts(id));
             handleIsUserPosts();
           };
@@ -75,19 +77,29 @@ const Profile: React.FC = () => {
         const result = await dispatch(fetchAsyncGetUserPosts(id))
         handleIsUserPosts();
     };
+    if(!profile?.id){
+      return null
+    }
 
     return (
         <div className={styles.profile}>
           {/* アバター・ニックネーム */}
           <div className={styles.profile_header}>
-            {/* <Avatar src={profile.img} /> */}
             {/* <div> */}
-                <Avatar alt="who?" src={profile.img} sx={{ width: 70, height: 70, border: 0.5, borderColor: 'black'}}/>
+              {
+                profile?.img
+                ? 
+                  <Avatar alt="who?" src={profile.img} sx={{ width: 70, height: 70, border: 0.5, borderColor: 'black'}}/>
+                :
+                  <Avatar  sx={{ width: 70, height: 70, border: 0.5, borderColor: 'black'}} /> 
+                  // <Avatar></Avatar>
+              }
+              
                 {/* <Avatar>{profile.nick_name.slice(0, 1)}</Avatar> */}
             {/* </div> */}
             <div className={styles.nick_name}>
-                {profile.nickName}
-                <div className={styles.user_name}>@{profile.user.username}</div>
+                {profile?.nickName}
+                <div className={styles.user_name}>@{profile?.user.username}</div>
             </div>
             {profile.id===myProfile.id && 
               <IconButton
@@ -148,7 +160,7 @@ const Profile: React.FC = () => {
               className={styles.following}
               onClick={async() => {
                   if(profile.countFollowing>0){
-                    await dispatch(fetchAsyncGetFollowings(profile.user.id));
+                    await dispatch(fetchAsyncGetFollowings(profile?.user.id));
                     dispatch(setOpenProfiles());
                     dispatch(setProfilesTitleFollowings());
                   }
@@ -189,7 +201,7 @@ const Profile: React.FC = () => {
             </div>
             <div
               className={styles.to_roadmap}
-              onClick={() => { navigate(`/roadmap/user/${profile.user.id}`); }}
+              onClick={() => { navigate(`/roadmap/user/${profile?.user.id}`); }}
             >
               計画
             </div>
@@ -198,8 +210,7 @@ const Profile: React.FC = () => {
           {/* 投稿一覧 */}
           <div className={styles.posts}>
             {
-                posts
-                .map((post, index) => ( 
+                posts?.map((post, index) => ( 
                     <div key={index} >
                         <Post post={post} />
                     </div>

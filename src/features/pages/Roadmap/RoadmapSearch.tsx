@@ -94,7 +94,9 @@ const RoadmapSearch: React.FC = () => {
     }
     func();
   }, [dispatch, word])
-
+  if(!roadmaps){
+    return null
+  }
   return (
     <div className={styles.container}>
     <div className={styles.navigation}>

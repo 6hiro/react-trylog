@@ -65,13 +65,13 @@ export const fetchAsyncUpdateAccountName = createAsyncThunk(
 export const fetchAsyncDeleteAccount = createAsyncThunk(
   "commentDelete/delete", 
   async (id: string ) => {
-    const  res  = await axios.delete(`delete-account/${id}`);
+    const  res  = await axios.delete(`delete-account/${id}/`);
     return res.data;
 });
 export const fetchAsyncGetProfile = createAsyncThunk(
   "auth/profile",
   async (id: string | undefined) => {
-    const res = await axios.get(`/profile/${id}`);
+    const res = await axios.get(`/profile/${id}/`);
     return res.data;
   }
 );
@@ -216,7 +216,8 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchAsyncLogin.fulfilled, (state, action) => {
       // console.log(action.payload.token)
-      // localStorage.setItem("localJWT", action.payload.token);
+      localStorage.setItem("localJWT", action.payload.token);
+      // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
       axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.token}`;
     });
     builder.addCase(fetchAsyncLogout.fulfilled, (state, action) => {

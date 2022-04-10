@@ -92,12 +92,17 @@ const PostDetail = () => {
   useEffect(() => {
     const func = async () => {
       const result = await dispatch(fetchAsyncGetPost(id));
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
       dispatch(fetchAsyncGetComments(id));
     //   console.log(id)
     }
     func();
 
   }, [dispatch, id])
+
+  if(!post){
+    return null
+  }
   return (
     <div className={styles.post_detail_container}>
       {/* 投稿の更新・削除のアイコンボタン */}

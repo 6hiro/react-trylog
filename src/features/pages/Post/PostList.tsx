@@ -21,12 +21,14 @@ const PostList: React.FC = () => {
     func();
   }, [dispatch])
 
+  if(!posts){
+    return null
+  }
     return (
       <div className={styles.posts_list_container}>
         <div className={styles.posts}>
           {
-            posts
-              .map((post, index) => ( 
+            posts?.map((post, index) => ( 
                 <div key={index} >
                   <Post post={post} />
                 </div>

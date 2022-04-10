@@ -28,14 +28,18 @@ const Login: React.FC = () => {
           initialErrors={{ email: "required" }}
           initialValues={{ email: "", password: "" }}
           onSubmit={ async (values) => {
-            // dispatch(fetchCredStart());
+            dispatch(fetchCredStart());
             const loginResult = await dispatch(fetchAsyncLogin(values));
-            // if (fetchAsyncLogin.fulfilled.match(loginResult)) {
             await dispatch(fetchAsyncGetMyProf());
-              // dispatch(fetchCredEnd());
-            navigate("/")
-            // }
-            // dispatch(fetchCredEnd());
+
+            if (fetchAsyncLogin.fulfilled.match(loginResult)) {
+              await dispatch(fetchAsyncGetMyProf());
+              dispatch(fetchCredEnd());
+              navigate("/")
+            }
+            if (fetchAsyncLogin.rejected.match(loginResult)) {
+              dispatch(fetchCredEnd());
+            }
             
           }}
           validationSchema={

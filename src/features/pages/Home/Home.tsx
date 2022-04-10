@@ -27,6 +27,10 @@ const Home: React.FC = () => {
     func();
   }, [dispatch])
 
+  if(!posts){
+    return null
+  }
+
 
   return (
     <div className={styles.posts_list_container}>

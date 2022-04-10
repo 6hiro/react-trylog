@@ -28,7 +28,9 @@ const PostSearch: React.FC = () => {
     }
     func();
   }, [dispatch, word])
-
+  if(!posts){
+    return null
+  }
   return (
     <div className={styles.posts_list_container}>
           {/* <div>{word}の検索結果</div> */}
@@ -48,8 +50,7 @@ const PostSearch: React.FC = () => {
         
         <div className={styles.posts}>
           {
-            posts
-            .map((post, index) => ( 
+            posts?.map((post, index) => ( 
                 <div key={index} >
                   <Post post={post} />
                 </div>

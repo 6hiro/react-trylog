@@ -81,6 +81,7 @@ const EditProfile:React.FC = () => {
     const fileInput = document.getElementById("imageInput");
     fileInput?.click();
   };
+  
   return (
     <>
       <Modal

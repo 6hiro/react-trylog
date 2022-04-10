@@ -41,6 +41,7 @@ import {
     selectMyProfile,
 } from '../Auth/authSlice';
 import { Avatar } from '@mui/material';
+import axios from 'axios';
 
 // const useStyles = makeStyles((theme: Theme) =>
 //   createStyles({
@@ -117,11 +118,14 @@ const Step: React.FC = () => {
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetSteps(id));
+            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
             await dispatch(fetchAsyncGetRoadmap(id));
         }
         func();
     }, [dispatch, id, selectedStepId, selectedStepToLearn, selectedStepIsCompleted])
-    
+    if(!steps){
+        return null
+    }
     return (
         <div className={styles.container}>
             <div className={styles.header}></div>

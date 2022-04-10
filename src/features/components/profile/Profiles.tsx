@@ -36,6 +36,10 @@ const Profiles: React.FC = () => {
     const profiles = useSelector(selectProfiles);
     const profilesTitle = useSelector(selectProfilesTitle);
 
+    if(!profiles){
+      return null
+  }
+
     return (
         <Modal
             isOpen={openProfiles}

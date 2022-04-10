@@ -109,6 +109,9 @@ const Roadmap: React.FC = () => {
     }, [dispatch, id])
     // }, [dispatch, id, selectedRoadmapId, selectedRoadmapTitle, selectedRoadmapTitle, selectedRoadmapIsPublic])
     
+    if(!roadmaps){
+        return null
+    }
     return (
         <div className={styles.container}>
             <div className={styles.navigation}>

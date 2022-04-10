@@ -7,7 +7,7 @@ import { PROPS_NEWPOST, PROPS_COMMENT } from "../../types";
 export const fetchAsyncGetPosts = createAsyncThunk(
   "posts/get", 
   async () => {
-    const res = await axios.get('/post');
+    const res = await axios.get('/post/');
     return res.data;
   }
 );
@@ -21,7 +21,7 @@ export const fetchAsyncGetMorePosts = createAsyncThunk(
 export const fetchAsyncGetPost = createAsyncThunk(
   "postDetail/get", 
   async (id: string | undefined) => {
-    const res = await axios.get(`/post/${id}`)
+    const res = await axios.get(`/post/${id}/`)
     return res.data;
   }
 );
@@ -46,7 +46,7 @@ export const fetchAsyncSharePost = createAsyncThunk(
   "share/post",
   async (postId: string) => {
   //   uploadData.append("isPublic", newPost.isPublic);
-    const res = await axios.post(`/post/share/${postId}`, {});
+    const res = await axios.post(`/post/share/${postId}/`, {});
     return res.data;
   }
 );
@@ -54,35 +54,35 @@ export const fetchAsyncUnsharePost = createAsyncThunk(
   "unshare/post",
   async (postId: string) => {
   //   uploadData.append("isPublic", newPost.isPublic);
-    const res = await axios.post(`/post/unshare/${postId}`, {});
+    const res = await axios.post(`/post/unshare/${postId}/`, {});
     return res.data;
   }
 );
 export const fetchAsyncGetUserPosts = createAsyncThunk(
   "userPosts/get", 
   async (userId: string | undefined) => {
-    const res = await axios.get(`/post/user/${userId}`);
+    const res = await axios.get(`/post/user/${userId}/`);
     return res.data;
   }
 );
 export const fetchAsyncGetSearchedPosts = createAsyncThunk(
   "searchedPosts/get", 
   async (word: string | undefined) => {
-    const res = await axios.get(`/post/search/${word}`)
+    const res = await axios.get(`/post/search/${word}/`)
     return res.data;
   }
 );
 export const fetchAsyncGetHashtagPosts = createAsyncThunk(
   "hashtagPosts/get", 
   async (hashtagId: string | undefined) => {
-    const res = await axios.get(`/post/hashtag/${hashtagId}`)
+    const res = await axios.get(`/post/hashtag/${hashtagId}/`)
     return res.data;
   }
 );
 export const fetchAsyncGetFollowingsPosts = createAsyncThunk(
   "followingsPosts/get",
   async (userId: string) => {
-    const res = await axios.get(`/followuser/post`);
+    const res = await axios.get(`/followuser/post/`);
     return res.data;
   }
 );
@@ -96,7 +96,7 @@ export const fetchAsyncGetLikedPosts = createAsyncThunk(
 // export const fetchAsyncUpdatePost = createAsyncThunk(
 //   "patch/post",
 //   async (post: {id: string | undefined, is_public: boolean}) => {
-//     const res = await axios.patch(`/create_update_delete_post/${post.id}`, {is_public: post.is_public});
+//     const res = await axios.patch(`/create_update_delete_post/${post.id}/`, {is_public: post.is_public});
 //     return res.data;
 //   }
 // )
@@ -318,8 +318,8 @@ export const postSlice = createSlice({
     builder.addCase(fetchAsyncGetFollowingsPosts.fulfilled, (state, action) => {
       return {
         ...state,
-        nextPageLink: action.payload.next,
-        posts: action.payload.results,
+        nextPageLink: action.payload?.next,
+        posts: action.payload?.results,
       };
     });
     builder.addCase(fetchAsyncGetLikedPosts.fulfilled, (state, action) => {

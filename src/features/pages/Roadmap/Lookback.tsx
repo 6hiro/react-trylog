@@ -36,6 +36,7 @@ import {
     selectMyProfile,
 } from '../Auth/authSlice';
 import styles from './Lookback.module.css'
+import axios from 'axios';
 
 const Lookback: React.FC = () => {
     // const classes = useStyles();
@@ -176,12 +177,15 @@ const Lookback: React.FC = () => {
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetLookbacks(String(id)));
+            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
             await dispatch(fetchAsyncGetStep(String(id)))
         }
         func();
         // console.log()
     }, [dispatch, id, selectedLookbackId, selectedLookbackLearned])
-
+    if(!lookbacks){
+        return null
+    }
     return (
         <div className={styles.container}>
             <div className={styles.header}></div>

@@ -13,6 +13,7 @@ import {
 import {
     fetchAsyncGetSearchedPosts,
 } from "../../pages/Post/postSlice";
+import axios from 'axios';
 
 const Layout: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
@@ -25,10 +26,11 @@ const Layout: React.FC = () => {
     useEffect(()=>{
         // ログイン済みかどうか検証
         const func = async () => {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
             const result = await dispatch(fetchAsyncGetMyProf());
-            if(fetchAsyncGetMyProf.rejected.match(result)){
-              navigate("/auth/login");
-            }
+            // if(fetchAsyncGetMyProf.rejected.match(result)){
+            //   navigate("/auth/login");
+            // }
             // navigate("/")
         };
         func();
