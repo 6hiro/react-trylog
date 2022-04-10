@@ -10,15 +10,18 @@ import Register from "../pages/Auth/Register";
 import Login from "../pages/Auth/Login";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
 import ResetPassword from "../pages/Auth/ResetPassword";
-// import Settings from "../pages/Auth/Settings";
+import Settings from "../pages/Auth/Settings";
 import Profiles from "../components/profile/Profiles";
 import Profile from "../pages/Profile/Profile"
+
 import PostList from "../pages/Post/PostList";
 import AddPost from "../pages/Post/AddPost";
 import PostDetail from "../pages/Post/PostDetail";
 import PostHashtag from "../pages/Post/PostHashtag";
 import PostSearch from "../pages/Post/PostSearch";
+
 import Roadmap from "../pages/Roadmap/Roadmap";
+import FollowingRoadmap from "../pages/Roadmap/FollowingRoadmap";
 import RoadmapSearch from "../pages/Roadmap/RoadmapSearch";
 import AddRoadmap from "../pages/Roadmap/AddRoadmap";
 import Step from "../pages/Roadmap/Step";
@@ -50,7 +53,7 @@ const Core: React.FC = () => {
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/forgot" element={<ForgotPassword />}/>
               <Route path="/auth/reset-password/:token" element={<ResetPassword />}/>
-              {/* <Route path="/settings" element={<Settings />} /> */}
+              <Route path="/settings" element={<Settings />} />
 
               {/* Profile */}
               <Route path="/prof/:id" element={<Profile />} />
@@ -65,8 +68,8 @@ const Core: React.FC = () => {
 
               {/* Roadmap */}
               <Route path="/roadmap/user/:id" element={<Roadmap />} />
+              <Route path="/roadmap" element={<FollowingRoadmap />} /> 
               <Route path="/roadmap/search/:word/" element={<RoadmapSearch />} /> 
-
               <Route path="/roadmap/add" element={<AddRoadmap />} />
               <Route path="/step/roadmap/:id" element={<Step />} />
               <Route path="/lookback/step/:id" element={<Lookback />} />

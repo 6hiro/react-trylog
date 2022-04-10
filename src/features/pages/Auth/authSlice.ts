@@ -57,15 +57,15 @@ export const fetchAsyncUpdateProf = createAsyncThunk(
 );
 export const fetchAsyncUpdateAccountName = createAsyncThunk(
   "auth/patch",
-  async (user: {name: string, id: number}) =>{
-    const res = await axios.patch(`/api/user/${user.id}`, {name: user.name});
+  async (user: {name: string, id: string}) =>{
+    const res = await axios.patch(`/update-account/${user.id}/`, {username: user.name});
     return res.data;
   }
 );
 export const fetchAsyncDeleteAccount = createAsyncThunk(
   "commentDelete/delete", 
-  async (id: string | undefined) => {
-    const  res  = await axios.delete(`/api/user/${id}`);
+  async (id: string ) => {
+    const  res  = await axios.delete(`delete-account/${id}`);
     return res.data;
 });
 export const fetchAsyncGetProfile = createAsyncThunk(
@@ -110,6 +110,7 @@ export const authSlice = createSlice({
   name: "auth",
   // Stateの初期状態
   initialState: {
+    openUpdateUser: false,
     openUpdateProfile: false,
     openProfiles: false,
     isLoadingAuth: false,
@@ -166,6 +167,12 @@ export const authSlice = createSlice({
     fetchCredEnd(state) {
       state.isLoadingAuth = false;
     },
+    setOpenUser(state) {
+      state.openUpdateUser = true;
+    },
+    resetOpenUser(state) {
+      state.openUpdateUser = false;
+    },
     setOpenProfile(state) {
       state.openUpdateProfile = true;
     },
@@ -187,8 +194,11 @@ export const authSlice = createSlice({
     setProfilesTitleLikes(state){
       state.profilesTitle = "いいね"
     },
-    editUserName(state, action){
+    editProfileName(state, action){
       state.profile.nickName = action.payload;
+    },
+    editUserName(state, action){
+      state.myprofile.user.username = action.payload;
     },
     logOut(state) {
       state.myprofile.id= ""
@@ -206,7 +216,8 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchAsyncLogin.fulfilled, (state, action) => {
       // console.log(action.payload.token)
-      localStorage.setItem("localJWT", action.payload.token);
+      // localStorage.setItem("localJWT", action.payload.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.token}`;
     });
     builder.addCase(fetchAsyncLogout.fulfilled, (state, action) => {
       localStorage.removeItem("localJWT");
@@ -248,6 +259,8 @@ export const authSlice = createSlice({
 export const {
   fetchCredStart,
   fetchCredEnd,
+  setOpenUser,
+  resetOpenUser,
   setOpenProfile,
   resetOpenProfile,
   setOpenProfiles,
@@ -257,6 +270,7 @@ export const {
   setProfilesTitleLikes,
   // setUser,
   editUserName,
+  editProfileName,
   logOut,
 } = authSlice.actions;
 
@@ -266,6 +280,7 @@ export const selectProfiles = (state: RootState) => state.auth.profiles;
 export const selectProfilesTitle = (state: RootState) => state.auth.profilesTitle;
 
 export const selectIsLoadingAuth = (state: RootState) => state.auth.isLoadingAuth;
+export const selectOpenUpdateUser= (state: RootState) => state.auth.openUpdateUser;
 export const selectOpenUpdateProfile= (state: RootState) => state.auth.openUpdateProfile;
 export const selectOpenProfiles= (state: RootState) => state.auth.openProfiles;
 

@@ -53,6 +53,13 @@ export const fetchAsyncNewRoadmap = createAsyncThunk(
     const res = await axios.post(`/roadmap/`, uploadData,);
     return res.data;
 });
+export const fetchAsyncGetFollowingsRoadmaps = createAsyncThunk(
+  "followingsRoadmaps/get",
+  async () => {
+    const res = await axios.get(`/followuser/roadmap`);
+    return res.data;
+  }
+);
 export const fetchAsyncGetSearchedRoadmap = createAsyncThunk("searchRoadmaps/get", async (word: string) => {
     const res = await axios.get(`/roadmap/search/${word}/`);
     return res.data;
@@ -295,6 +302,17 @@ export const roadmapSlice = createSlice({
         };
       });
       builder.addCase(fetchAsyncGetSearchedRoadmap.fulfilled, (state, action) => {
+        return {
+            ...state,
+            roadmapPagenation:{
+              count: action.payload.count,
+              next: action.payload.next,
+              previous: action.payload.previous,
+            },
+            roadmaps: action.payload.results,
+          };
+      });
+      builder.addCase(fetchAsyncGetFollowingsRoadmaps.fulfilled, (state, action) => {
         return {
             ...state,
             roadmapPagenation:{

@@ -1,5 +1,6 @@
 import React,  { useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 
 import { AppDispatch } from '../../../app/store';
 import {
@@ -15,6 +16,8 @@ import styles from '../Post/PostList.module.css';
 
 const Home: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  let navigate = useNavigate();
+
   const posts = useSelector(selectPosts);
   const profile = useSelector(selectMyProfile);
   useEffect(()=>{
@@ -27,6 +30,25 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.posts_list_container}>
+          <div className={styles.navigation}>
+        <div
+            className={`${styles.roadmaps}  ${styles.is_user_roadmaps}`}
+            onClick={async() => {
+              const result = await dispatch(fetchAsyncGetFollowingsPosts(profile.user.id));
+            }}
+        >
+         つぶやき
+        </div>
+        <div
+            className={`${styles.user_roadmaps}`}
+
+            onClick={() => {
+              navigate(`/roadmap`);
+            }}
+        >
+             計画
+        </div>
+    </div>
       <div className={styles.posts}>
         {
           posts

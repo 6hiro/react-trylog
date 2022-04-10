@@ -6,7 +6,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import PersonIcon from '@mui/icons-material/Person';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
 
 import { AppDispatch } from '../../../app/store';
 import {
@@ -87,6 +89,24 @@ const Profile: React.FC = () => {
                 {profile.nickName}
                 <div className={styles.user_name}>@{profile.user.username}</div>
             </div>
+            {profile.id===myProfile.id && 
+              <IconButton
+                    aria-label="to settings"
+                    onClick={() => 
+                        navigate(`/settings/`)
+                    }
+
+                >
+                    <SettingsOutlinedIcon sx={{color: 'white'}}/>
+                </IconButton>
+              // <SettingsOutlinedIcon 
+              //   sx={{width: 25, height: 25, color: 'white'}}
+              //   onClick={() => 
+              //     navigate(`/settings/`)
+              //   }
+              // />
+            }
+
 
           </div>
           

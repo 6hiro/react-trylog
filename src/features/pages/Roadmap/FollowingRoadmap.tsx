@@ -24,7 +24,7 @@ import {
     fetchRoadmapDelete,
     selectRoadmapPagenation,
     fetchAsyncGetRoadmapsMore,
-    fetchAsyncGetSearchedRoadmap
+    fetchAsyncGetFollowingsRoadmaps
 
 }from './roadmapSlice';
 import { selectMyProfile } from '../Auth/authSlice';
@@ -33,7 +33,7 @@ import UpdateRoadmap from '../../components/roadmap/UpdateRoadmap';
 import styles from './Roadmap.module.css'
 
 
-const RoadmapSearch: React.FC = () => {
+const FollowingRoadmap: React.FC = () => {
   const { word } = useParams();
   const dispatch: AppDispatch = useDispatch();
   let navigate = useNavigate();
@@ -89,7 +89,7 @@ const RoadmapSearch: React.FC = () => {
   useEffect(()=>{
     const func = async () => {
         if(String(word).length!==0){
-            const result = await dispatch(fetchAsyncGetSearchedRoadmap(String(word)));
+            const result = await dispatch(fetchAsyncGetFollowingsRoadmaps());
         }
     }
     func();
@@ -101,7 +101,7 @@ const RoadmapSearch: React.FC = () => {
         <div
             className={`${styles.roadmaps}`}
             onClick={() => {
-              navigate(`/search/${word}/`);
+              navigate(`/`);
             }}
         >
          つぶやき
@@ -110,7 +110,7 @@ const RoadmapSearch: React.FC = () => {
             className={`${styles.user_roadmaps} ${styles.is_user_roadmaps}`}
 
             onClick={async() => {
-                const result = await dispatch(fetchAsyncGetSearchedRoadmap(String(word)));
+                const result = await dispatch(fetchAsyncGetFollowingsRoadmaps());
                 // if(fetchAsyncGetOwnRoadmaps.rejected.match(result)){
 
                 // }else if(fetchAsyncGetOwnRoadmaps.fulfilled.match(result)){
@@ -256,4 +256,4 @@ const RoadmapSearch: React.FC = () => {
   )
 }
 
-export default RoadmapSearch;
+export default FollowingRoadmap

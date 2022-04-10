@@ -15,7 +15,8 @@ import {
   // selectMyUser,
   selectProfile,
   selectOpenUpdateProfile,
-  editUserName,
+  // editUserName,
+  editProfileName,
   resetOpenProfile,
   selectIsLoadingAuth,
   fetchCredStart,
@@ -103,7 +104,7 @@ const EditProfile:React.FC = () => {
               fullWidth
               inputProps={{maxLength: 8}}
               value={profile?.nickName}
-              onChange={(e) => dispatch(editUserName(e.target.value))}
+              onChange={(e) => dispatch(editProfileName(e.target.value))}
             />
 
             {image!==null && 

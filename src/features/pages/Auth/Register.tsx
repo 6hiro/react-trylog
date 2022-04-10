@@ -53,7 +53,7 @@ const Register: React.FC = () => {
       }}
       validationSchema={Yup.object().shape({
         name: Yup.string()
-          .matches(/^[0-9a-zA-Z]+$/, '半角英数字のみ入力できます。')
+          .matches(/^[0-9a-zA-Z_]+$/, '半角英数字もしくはアンダーバーのみ入力できます。')
           .required("ユーザー名は必須です。")
           .max(191, "191文字以内で入力してください。"),
           // .min(8, "8文字以上で入力してください。"),
