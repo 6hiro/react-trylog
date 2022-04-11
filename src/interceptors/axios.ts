@@ -10,7 +10,7 @@ axios.defaults.headers.post["Accept"] = 'application/json';
 // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
 
 // cors用
-// axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = true;
 
 let refresh = false;
 
@@ -18,7 +18,7 @@ axios.interceptors.response.use(resp => resp, async error => {
     if ((error.response.status === 403 || error.response.status === 401) && !refresh) {
         refresh = true;
 
-        const response = await axios.post('refresh/', {});
+        const response = await axios.post('refresh/', {}, {withCredentials: true});
 
         // if (response.status === 200) {
         if (response.data.token){
