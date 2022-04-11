@@ -8,7 +8,7 @@ axios.defaults.baseURL = `${authUrl}api/v1/`;
 axios.defaults.headers.post["Content-Type"] = 'application/json';
 axios.defaults.headers.post["Accept"] = 'application/json';
 // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
-axios.defaults.headers.common['X-CSRFToken'] = document.cookie;
+// axios.defaults.headers.common['X-CSRFToken'] = document.cookie;
 
 // cors用
 // axios.defaults.withCredentials = true;
