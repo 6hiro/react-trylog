@@ -11,7 +11,7 @@ axios.defaults.headers.post["Accept"] = 'application/json';
 axios.defaults.headers.common['X-CSRFToken'] = 'csrftoken';
 
 // cors用
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 let refresh = false;
 
