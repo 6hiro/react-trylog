@@ -12,10 +12,6 @@ import {
   PROPS_UPDATE_LOOKBACK 
 } from "../../types";
 
-// const apiUrlRoadmap = `/roadmap/`
-// const apiUrlFollowRoadmap = `/followuser/roadmap/`;
-// const apiUrlStep = `/step/`
-// const apiUrlLookback = `/lookback/`
 
 export const fetchAsyncGetRoadmaps = createAsyncThunk("roadmaps/get", async () => {
   const res = await axios.get('/roadmap/');
