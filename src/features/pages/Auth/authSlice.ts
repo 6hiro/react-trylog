@@ -9,7 +9,7 @@ export const fetchAsyncLogin = createAsyncThunk(
   // actionの名前
   "auth/login",
   async (authen: PROPS_AUTHEN) => {
-    const res = await axios.post("login/", authen, { withCredentials: true });
+    const res = await axios.post("login/", authen);
     return res.data;
   }
 );
@@ -42,7 +42,7 @@ export const fetchAsyncResetPassword = createAsyncThunk(
   }
 );
 export const fetchAsyncGetMyProf = createAsyncThunk("myprofile/get", async () => {
-  const res = await axios.get("myprofile/", { withCredentials: true });
+  const res = await axios.get("myprofile/");
   return res.data[0];
 });
 export const fetchAsyncUpdateProf = createAsyncThunk(
