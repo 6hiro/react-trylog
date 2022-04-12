@@ -19,13 +19,22 @@ const Home: React.FC = () => {
   let navigate = useNavigate();
 
   const posts = useSelector(selectPosts);
-  const profile = useSelector(selectMyProfile);
+  const myprofile = useSelector(selectMyProfile);
   useEffect(()=>{
     const func = async () => {
-      const result = await dispatch(fetchAsyncGetFollowingsPosts(profile.user.id));
+      const result = await dispatch(fetchAsyncGetFollowingsPosts(myprofile.user.id));
     }
     func();
   }, [dispatch])
+
+  if(myprofile?.countFollowing){
+    return (
+      <div className={styles.posts_list_container}>
+        フォローしているユーザーが投稿が見れます
+      </div>
+    )
+
+  }
 
   if(!posts){
     return null
@@ -38,7 +47,7 @@ const Home: React.FC = () => {
         <div
             className={`${styles.roadmaps}  ${styles.is_user_roadmaps}`}
             onClick={async() => {
-              const result = await dispatch(fetchAsyncGetFollowingsPosts(profile.user.id));
+              const result = await dispatch(fetchAsyncGetFollowingsPosts(myprofile.user.id));
             }}
         >
          つぶやき
