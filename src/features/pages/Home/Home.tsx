@@ -27,7 +27,7 @@ const Home: React.FC = () => {
     func();
   }, [dispatch])
 
-  if(myprofile?.countFollowing>0){
+  if(myprofile?.countFollowing===0){
     return (
       <div className={styles.posts_list_container}>
         フォローしているユーザーが投稿が見れます
