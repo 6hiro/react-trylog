@@ -30,7 +30,7 @@ const Home: React.FC = () => {
   if(myprofile?.countFollowing===0){
     return (
       <div className={styles.zero_following}>
-        フォローしているユーザーが投稿が見れます
+        フォローしているユーザーの投稿が見れます
       </div>
     )
 
