@@ -29,7 +29,7 @@ const Home: React.FC = () => {
 
   if(myprofile?.countFollowing===0){
     return (
-      <div className={styles.posts_list_container}>
+      <div className={styles.zero_following}>
         フォローしているユーザーが投稿が見れます
       </div>
     )
@@ -43,7 +43,7 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.posts_list_container}>
-          <div className={styles.navigation}>
+      <div className={styles.navigation}>
         <div
             className={`${styles.roadmaps}  ${styles.is_user_roadmaps}`}
             onClick={async() => {
