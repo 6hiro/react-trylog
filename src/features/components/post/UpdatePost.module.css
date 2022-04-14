@@ -1,0 +1,17 @@
+.update_post .update_post_title {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bolder;
+  text-align: center;
+  color: #0e0e0e;
+  font-weight: bold;
+}
+.update_post .update_post_progress {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+.update_post .update_post_form .update_post_button {
+  text-align: right;
+  margin-top: 10px;
+}

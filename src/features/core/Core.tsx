@@ -32,13 +32,16 @@ import Lookback from "../pages/Roadmap/Lookback";
 
 
 const Core: React.FC = () => {
+  // const url = window.location.href
+  // console.log(window.location.pathname.slice(1, 5));
+  const isAuth = (window.location.pathname.slice(1, 5) === "auth")
   
   return (
     <div>
 
       <BrowserRouter>
         {/* Layout */}
-        <Layout />
+        {!isAuth && <Layout />}
         {/* いいねした人やfollower、followeeの一覧 */}
         <Profiles />
         

@@ -16,7 +16,8 @@ export const fetchAsyncLogin = createAsyncThunk(
 export const fetchAsyncLogout = createAsyncThunk(
   "auth/logout",
   async () => {
-    const res = await axios.post("logout/", {});
+    const refreshJWT = `{"refresh": "${localStorage.refreshJWT}"}`
+    const res = await axios.post("logout/", refreshJWT);
     return res.data;
   }
 );

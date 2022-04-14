@@ -11,10 +11,6 @@ import {
     fetchAsyncGetMyProf,
     fetchAsyncRefreshToken,
 } from "../../pages/Auth/authSlice";
-import {
-    fetchAsyncGetSearchedPosts,
-} from "../../pages/Post/postSlice";
-import axios from 'axios';
 
 const Layout: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
