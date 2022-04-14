@@ -13,6 +13,7 @@ import Post from '../../components/post/Post';
 import GetMorePost from '../../components/post/GetMorePost';
 
 import styles from './PostList.module.css';
+import { fetchAsyncRefreshToken } from '../Auth/authSlice';
 
 
 const PostSearch: React.FC = () => {
@@ -28,6 +29,22 @@ const PostSearch: React.FC = () => {
     }
     func();
   }, [dispatch, word])
+
+  useEffect(()=>{
+    const func = async () => {
+      const result = await dispatch(fetchAsyncGetSearchedPosts(word));
+
+      if(fetchAsyncGetSearchedPosts.rejected.match(result)){
+        await dispatch(fetchAsyncRefreshToken())
+        const retryResult = await dispatch(fetchAsyncGetSearchedPosts(word));
+        if(fetchAsyncGetSearchedPosts.rejected.match(retryResult)){
+          navigate("/auth/login")
+        }
+      }
+    }
+    func();
+  }, [dispatch, word])
+
   if(!posts){
     return null
   }

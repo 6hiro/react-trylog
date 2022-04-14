@@ -19,6 +19,7 @@ import {
   fetchPostEnd,
 } from "./postSlice";
 import {
+    fetchAsyncRefreshToken,
     selectMyProfile
 } from "../Auth/authSlice"
 import styles from "./AddPost.module.css";
@@ -42,11 +43,22 @@ const AddPost: React.FC= () => {
                 onSubmit={async (values) => {
                     dispatch(fetchPostStart());
                     const result = await dispatch(fetchAsyncNewPost(values));
-                    if (fetchAsyncNewPost.fulfilled.match(result)) {
+                    if (fetchAsyncNewPost.rejected.match(result)) {
+                        await dispatch(fetchAsyncRefreshToken())
+                        const retryResult =  await dispatch(fetchAsyncNewPost(values));
+                        if (fetchAsyncNewPost.rejected.match(retryResult)) {
+                            navigate("/auth/login")
+                        }else if (fetchAsyncNewPost.fulfilled.match(retryResult)) {
+                            dispatch(fetchPostEnd());
+                            navigate(`/prof/${myprofile.user.id}`)
+                        }
+
+                        dispatch(fetchPostEnd());
+                    }else if (fetchAsyncNewPost.fulfilled.match(result)) {
                         dispatch(fetchPostEnd());
                         navigate(`/prof/${myprofile.user.id}`)
                     }
-                    dispatch(fetchPostEnd());
+                    // dispatch(fetchPostEnd());
                 }}
                 validationSchema={
                     Yup.object().shape({

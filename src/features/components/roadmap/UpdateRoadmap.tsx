@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import Modal from "react-modal";
 import { Formik } from "formik";
@@ -21,6 +22,7 @@ import {
     fetchAsyncUpdateRoadmap,
 }from '../../pages/Roadmap/roadmapSlice';
 import styles from './UpdateRoadmap.module.css'
+import { fetchAsyncRefreshToken } from '../../pages/Auth/authSlice';
 
 
 // moduleのstyleを定義
@@ -43,6 +45,7 @@ const customStyles = {
 
 const UpdateRoadmap: React.FC<{ roadmapId: string; title: string; overview: string; isPublic: string;}> = (props) => {
   Modal.setAppElement("#root");
+  let navigate = useNavigate();
   const openRoadmap = useSelector(selectOpenRoadmap);
   const isLoadingRoadmap = useSelector(selectIsLoadingRoadmap);
   const dispatch: AppDispatch = useDispatch();
@@ -67,13 +70,19 @@ const UpdateRoadmap: React.FC<{ roadmapId: string; title: string; overview: stri
           }}
           onSubmit={async (values) => {
             dispatch(fetchPostStart());
-            const postResult = await dispatch(fetchAsyncUpdateRoadmap(values));
-
-            if (fetchAsyncUpdateRoadmap.fulfilled.match(postResult)) {
-              await dispatch(fetchPostEnd());
-              await dispatch(resetOpenRoadmap());
-            }else{
+            const result = await dispatch(fetchAsyncUpdateRoadmap(values));
+            if (fetchAsyncUpdateRoadmap.rejected.match(result)) {
+              await dispatch(fetchAsyncRefreshToken());
+              const retryResult = await dispatch(fetchAsyncUpdateRoadmap(values));
+              if (fetchAsyncUpdateRoadmap.rejected.match(retryResult)) {
+                navigate("/auth/login");
+              }else if (fetchAsyncUpdateRoadmap.fulfilled.match(retryResult)) {
+                dispatch(fetchPostEnd());
+                dispatch(resetOpenRoadmap());
+              }
+            }else if (fetchAsyncUpdateRoadmap.fulfilled.match(result)) {
               dispatch(fetchPostEnd());
+              dispatch(resetOpenRoadmap());
             }
           }}
           validationSchema={

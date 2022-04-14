@@ -106,7 +106,12 @@ export const fetchAsyncDeleteStep = createAsyncThunk("stepDelete/delete", async 
   return res.data;
 });
 export const fetchAsyncChangeStepOrder = createAsyncThunk("editstep/post", async (editStep: PROPS_CHANGE_STEP_ORDER) => {
-  const res = await axios.post(`/step/change-order/`, editStep.steps);
+  const res = await axios.post(`/step/change-order`, editStep.steps,{
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `JWT ${localStorage.localJWT}`,
+    },
+  });
   return res.data;
 });
 export const fetchAsyncGetLookbacks = createAsyncThunk("lookbacks/get", async(stepId: string) =>{

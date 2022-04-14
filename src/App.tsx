@@ -7,7 +7,7 @@ import axios from 'axios';
 axios.defaults.headers.post["Content-Type"] = 'application/json';
 axios.defaults.headers.post["Accept"] = 'application/json';
 // cors用
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 const App: React.FC = () => {
     return (

@@ -43,7 +43,7 @@ const Register: React.FC = () => {
         );
 
         if (fetchAsyncRegister.fulfilled.match(registrationResult)) {
-          await dispatch(fetchAsyncLogin({email:values.email, password:values.password}));
+          // await dispatch(fetchAsyncLogin({email:values.email, password:values.password}));
           // await dispatch(fetchAsyncGetMyProf());
           dispatch(fetchCredEnd());
           setOpenMessage(true)

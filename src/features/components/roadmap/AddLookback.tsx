@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 import { AppDispatch } from "../../../app/store";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -16,9 +17,11 @@ import {
     fetchAsyncNewLookback,
 } from '../../pages/Roadmap/roadmapSlice';
 import styles from "./AddLookback.module.css";
+import { fetchAsyncRefreshToken } from '../../pages/Auth/authSlice';
 
 const AddLookback: React.FC<{stepId: string;}> = (props) => {
     const dispatch: AppDispatch = useDispatch();
+    let navigate = useNavigate();
     const isLoadingRoadmap = useSelector(selectIsLoadingRoadmap);
     
     return (
@@ -32,7 +35,16 @@ const AddLookback: React.FC<{stepId: string;}> = (props) => {
             onSubmit={async (values,  {resetForm}) => {
                 dispatch(fetchPostStart());
                 const result = await dispatch(fetchAsyncNewLookback(values));
-                if(fetchAsyncNewLookback.fulfilled.match(result)){
+                if(fetchAsyncNewLookback.rejected.match(result)){
+                    await dispatch(fetchAsyncRefreshToken());
+                    const retryResult = await dispatch(fetchAsyncNewLookback(values));
+                    if(fetchAsyncNewLookback.rejected.match(retryResult)){
+                        navigate("/auth/login");
+                    }else if(fetchAsyncNewLookback.fulfilled.match(retryResult)){
+                        dispatch(fetchPostEnd());
+                        resetForm()
+                    }
+                }else if(fetchAsyncNewLookback.fulfilled.match(result)){
                     dispatch(fetchPostEnd());
                     resetForm()
                 }

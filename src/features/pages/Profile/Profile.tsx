@@ -24,6 +24,7 @@ import {
     setOpenProfiles,
     setProfilesTitleFollowings,
     setProfilesTitleFollowers,
+    fetchAsyncRefreshToken,
 } from "../Auth/authSlice";
 import { 
     fetchAsyncGetUserPosts,
@@ -34,7 +35,6 @@ import Post from '../../components/post/Post';
 import EditProfile from "../../components/profile/EditProfile";
 import GetMorePost from '../../components/post/GetMorePost';
 import styles from './Profile.module.css'
-import axios from 'axios';
 
 const Profile: React.FC = () => {
     let navigate = useNavigate();
@@ -47,17 +47,31 @@ const Profile: React.FC = () => {
     const posts = useSelector(selectPosts);
 
     const handlerFollowed = async () => {
-        const result = await dispatch(fetchAsyncFollowUnFollow(profile?.user.id));  
+        const result = await dispatch(fetchAsyncFollowUnFollow(profile?.user.id)); 
+        if (fetchAsyncFollowUnFollow.rejected.match(result)){
+          await dispatch(fetchAsyncRefreshToken())
+          const retryResult = await dispatch(fetchAsyncFollowUnFollow(profile?.user.id)); 
+        }
     };
 
     useEffect(() => {
-        const func = async () => {
-            const result = await dispatch(fetchAsyncGetProfile(id));
-            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
+      const func = async () => {
+          const result = await dispatch(fetchAsyncGetProfile(id));
+          if (fetchAsyncGetProfile.rejected.match(result)) {
+            await dispatch(fetchAsyncRefreshToken())
+            const retryResult = await dispatch(fetchAsyncGetProfile(id));
+            if(fetchAsyncGetProfile.fulfilled.match(retryResult)){
+              await dispatch(fetchAsyncGetUserPosts(id));
+              handleIsUserPosts();
+            }
+          }else if(fetchAsyncGetProfile.fulfilled.match(result)){
             await dispatch(fetchAsyncGetUserPosts(id));
             handleIsUserPosts();
-          };
-          func();
+          }
+          // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
+
+        };
+        func();
     }, [dispatch, id])
 
     // 表示されている投稿一覧が、ユーザーの投稿かユーザーがいいねをした投稿一覧かの状態を管理
@@ -70,13 +84,29 @@ const Profile: React.FC = () => {
     }
 
     const getFavoritePosts = async () => {
-        const result = await dispatch(fetchAsyncGetLikedPosts(id));
-        handleIsFavoritePosts();
-      };
-      const getUserPosts = async () => {
-        const result = await dispatch(fetchAsyncGetUserPosts(id))
-        handleIsUserPosts();
+      const result = await dispatch(fetchAsyncGetLikedPosts(id));
+      handleIsFavoritePosts();
+      if (fetchAsyncGetLikedPosts.rejected.match(result)) {
+        await dispatch(fetchAsyncRefreshToken())
+        const retryResult = await dispatch(fetchAsyncGetLikedPosts(id));
+        if (fetchAsyncGetLikedPosts.rejected.match(retryResult)) {
+          navigate("/auth/login")
+        }
+      }
+
     };
+    const getUserPosts = async () => {
+      const result = await dispatch(fetchAsyncGetUserPosts(id))
+      handleIsUserPosts();
+      if (fetchAsyncGetUserPosts.rejected.match(result)) {
+        await dispatch(fetchAsyncRefreshToken())
+        const retryResult = await dispatch(fetchAsyncGetUserPosts(id));
+        if (fetchAsyncGetUserPosts.rejected.match(retryResult)) {
+          navigate("/auth/login")
+        }
+      }
+    };
+
     if(!profile?.id){
       return null
     }

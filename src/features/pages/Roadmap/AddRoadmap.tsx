@@ -19,6 +19,7 @@ import {
     fetchAsyncNewRoadmap,
 } from './roadmapSlice';
 import { 
+  fetchAsyncRefreshToken,
   selectMyProfile,
 //   fetchAsyncRefreshToken,
 //   setOpenLogIn
@@ -44,7 +45,17 @@ const AddRoadmap: React.FC = () => {
           onSubmit={async (values) => {
             dispatch(fetchPostStart());
             const result = await dispatch(fetchAsyncNewRoadmap(values));
-            if (fetchAsyncNewRoadmap.fulfilled.match(result)) {
+            if (fetchAsyncNewRoadmap.rejected.match(result)) {
+              await dispatch(fetchAsyncRefreshToken())
+              const retryResult = await dispatch(fetchAsyncNewRoadmap(values));
+              if (fetchAsyncNewRoadmap.rejected.match(result)) {
+                dispatch(fetchPostEnd());
+                navigate(`/auth/login`);
+              }else if (fetchAsyncNewRoadmap.fulfilled.match(result)) {
+                dispatch(fetchPostEnd());
+                navigate(`/roadmap/user/${profile.user.id}`);
+              }
+            }else if (fetchAsyncNewRoadmap.fulfilled.match(result)) {
               dispatch(fetchPostEnd());
               navigate(`/roadmap/user/${profile.user.id}`);
             }

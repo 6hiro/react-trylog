@@ -30,14 +30,11 @@ const Login: React.FC = () => {
           onSubmit={ async (values) => {
             dispatch(fetchCredStart());
             const loginResult = await dispatch(fetchAsyncLogin(values));
-            await dispatch(fetchAsyncGetMyProf());
-
             if (fetchAsyncLogin.fulfilled.match(loginResult)) {
               await dispatch(fetchAsyncGetMyProf());
               dispatch(fetchCredEnd());
               navigate("/")
-            }
-            if (fetchAsyncLogin.rejected.match(loginResult)) {
+            }else{
               dispatch(fetchCredEnd());
             }
             

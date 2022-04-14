@@ -1,5 +1,6 @@
 import React,  { useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
+import { useParams, useNavigate, Link } from 'react-router-dom';
 
 import { AppDispatch } from '../../../app/store';
 import { 
@@ -9,14 +10,23 @@ import {
 import Post from '../../components/post/Post';
 import GetMorePost from '../../components/post/GetMorePost';
 import styles from './PostList.module.css';
+import { fetchAsyncRefreshToken } from '../Auth/authSlice';
 
 const PostList: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const posts = useSelector(selectPosts);
+  let navigate = useNavigate();
     
   useEffect(()=>{
     const func = async () => {
       const result = await dispatch(fetchAsyncGetPosts());
+      if(fetchAsyncGetPosts.rejected.match(result)){
+        await dispatch(fetchAsyncRefreshToken())
+        const retryResult = await dispatch(fetchAsyncGetPosts());
+        if(fetchAsyncGetPosts.rejected.match(retryResult)){
+          navigate("/auth/login")
+        }
+      }
     }
     func();
   }, [dispatch])

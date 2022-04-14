@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+
 import { useSelector, useDispatch } from "react-redux";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -23,6 +25,7 @@ import {
   fetchCredEnd,
   fetchAsyncUpdateAccountName,
   fetchAsyncUpdateProf,
+  fetchAsyncRefreshToken,
 } from "../../pages/Auth/authSlice";
 import {
   fetchUpdateProf,
@@ -52,6 +55,8 @@ const customStyles = {
 
 const EditProfile:React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
+  let navigate = useNavigate();
+
   const openProfile = useSelector(selectOpenUpdateProfile);
   const profile = useSelector(selectProfile);
   const isLoadingAuth = useSelector(selectIsLoadingAuth);
@@ -69,7 +74,18 @@ const EditProfile:React.FC = () => {
     };
     dispatch(fetchCredStart());
     const result = await dispatch(fetchAsyncUpdateProf(packet));
-    if(fetchAsyncUpdateProf.fulfilled.match(result)){
+    if(fetchAsyncUpdateProf.rejected.match(result)){
+      await dispatch(fetchAsyncRefreshToken())
+      const retryResult = await dispatch(fetchAsyncUpdateProf(packet));
+      if(fetchAsyncUpdateProf.rejected.match(retryResult)){
+        dispatch(fetchCredEnd());
+        navigate("/auth/login")
+      }else if(fetchAsyncUpdateProf.fulfilled.match(retryResult)){
+        dispatch(fetchCredEnd());
+        dispatch(fetchUpdateProf({postedBy: profile.user.id, name: profile.nickName, img: profile.img}));
+        dispatch(resetOpenProfile());
+      }
+    }else if(fetchAsyncUpdateProf.fulfilled.match(result)){
         dispatch(fetchCredEnd());
         dispatch(fetchUpdateProf({postedBy: profile.user.id, name: profile.nickName, img: profile.img}));
         dispatch(resetOpenProfile());

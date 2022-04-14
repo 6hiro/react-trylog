@@ -15,6 +15,7 @@ import {
   fetchAsyncDeleteAccount,
   logOut,
   setOpenUser,
+  fetchAsyncRefreshToken,
 } from "../../pages/Auth/authSlice";
 import styles from './Settings.module.css'
 import EditUser from '../../components/profile/EditUser';
@@ -37,7 +38,15 @@ const Settings: React.FC = () => {
     // Account削除の処理
     const UserDelete = async() => {
         const result = await dispatch(fetchAsyncDeleteAccount(myprofile.user.id))
-        if(fetchAsyncDeleteAccount.fulfilled.match(result)){
+        
+        if(fetchAsyncDeleteAccount.rejected.match(result)){
+            await dispatch(fetchAsyncRefreshToken())
+            const retryResult = await dispatch(fetchAsyncDeleteAccount(myprofile.user.id))
+            if(fetchAsyncDeleteAccount.fulfilled.match(retryResult)){
+                dispatch(logOut());
+                navigate("/auth/login")
+            }
+        }else if(fetchAsyncDeleteAccount.fulfilled.match(result)){
             dispatch(logOut());
             navigate("/auth/login")
         }
@@ -76,9 +85,7 @@ const Settings: React.FC = () => {
                 アカウントを削除する
             </div>
           
-          <EditUser />
-
-
+            <EditUser />
 
             {/* Account削除の確認画面 */}
             <Dialog

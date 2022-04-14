@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { AppDispatch } from '../../../app/store';
 import {
+  fetchAsyncRefreshToken,
     selectMyProfile,
 } from '../../pages/Auth/authSlice' 
 import { 
@@ -23,6 +24,13 @@ const Home: React.FC = () => {
   useEffect(()=>{
     const func = async () => {
       const result = await dispatch(fetchAsyncGetFollowingsPosts(myprofile.user.id));
+      if(fetchAsyncGetFollowingsPosts.rejected.match(result)){
+        await dispatch(fetchAsyncRefreshToken());
+        const retryResult = await dispatch(fetchAsyncGetFollowingsPosts(myprofile.user.id));
+        if(fetchAsyncGetFollowingsPosts.rejected.match(retryResult)){
+          navigate("/auth/login");
+        }
+      }
     }
     func();
   }, [dispatch])

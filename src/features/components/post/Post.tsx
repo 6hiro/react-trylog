@@ -17,7 +17,8 @@ import {
     // selectMyUser,
     selectMyProfile,
     setProfilesTitleLikes,
-    setOpenProfiles
+    setOpenProfiles,
+    fetchAsyncRefreshToken
 } from '../../pages/Auth/authSlice' 
 import { 
     fetchAsyncLikeUnlikePost,
@@ -241,20 +242,37 @@ const Post: React.FC<{
                         <div>
                             {(props.post.isShared && props.post.postedBy.id === myProfile.user.id) ?
                                 <IconButton
-                                    aria-label="shared"
+                                    aria-label="unshare-button"
                                     onClick={async() => {
                                         // navigate(`/post/${post.id}/`)
-                                        await dispatch(fetchAsyncUnsharePost(props.post.id));
-                                        dispatch(fetchPostUnshare(props.post.id));
+                                        const result = await dispatch(fetchAsyncUnsharePost(props.post.id));
+                                        if(fetchAsyncUnsharePost.rejected.match(result)){
+                                            await dispatch(fetchAsyncRefreshToken());
+                                            const restryReult = await dispatch(fetchAsyncUnsharePost(props.post.id));
+                                            if(fetchAsyncUnsharePost.rejected.match(restryReult)){
+                                                navigate("/auth/login");
+                                            }else if(fetchAsyncUnsharePost.fulfilled.match(restryReult)){
+                                                dispatch(fetchPostUnshare(props.post.id));
+                                            }
+                                        }else if(fetchAsyncUnsharePost.fulfilled.match(result)){
+                                            dispatch(fetchPostUnshare(props.post.id));
+                                        }
                                     }}
                                 >
                                     <AutorenewIcon fontSize="small" sx={{ color: pink[500] }}/>
                                 </IconButton>
                              :
                                 <IconButton
-                                    aria-label="unsharedt"
+                                    aria-label="share-button"
                                     onClick={async() => {
-                                        await dispatch(fetchAsyncSharePost(post.id))
+                                        const result = await dispatch(fetchAsyncSharePost(post.id));
+                                        if(fetchAsyncSharePost.rejected.match(result)){
+                                            await dispatch(fetchAsyncRefreshToken());
+                                            const retryResult = await dispatch(fetchAsyncSharePost(post.id));
+                                            if(fetchAsyncSharePost.rejected.match(retryResult)){
+                                                navigate("/auth/login");
+                                            }
+                                        }
                                         // navigate(`/prof/${myProfile.user.id}/`)
                                         // dispatch(fetchPostShare(props.post.id));
                                     }}
@@ -278,17 +296,36 @@ const Post: React.FC<{
                                 icon={<FavoriteBorder fontSize="small"/>}
                                 checkedIcon={<Favorite fontSize="small" sx={{ color: pink[500] }} />}
                                 checked={post.isLiked}
-                                onChange={()=>{
-                                    dispatch(fetchAsyncLikeUnlikePost(post.id));
+                                onChange={async()=>{
+                                    const result = await dispatch(fetchAsyncLikeUnlikePost(post.id));
+                                    if(fetchAsyncLikeUnlikePost.rejected.match(result)){
+                                        await dispatch(fetchAsyncRefreshToken());
+                                        const result = await dispatch(fetchAsyncLikeUnlikePost(post.id));
+                                        if(fetchAsyncLikeUnlikePost.rejected.match(result)){
+                                            navigate("/auth/login");
+                                        }
+                                    }
+
                                 }}
                             />
                             <span
                                 className={styles.post_likes}
                                 onClick={async() =>{
                                     if(post.countLikes>0){
-                                        await dispatch(fetchAsyncGetLikesUser(post.id));
-                                        dispatch(setOpenProfiles());
-                                        dispatch(setProfilesTitleLikes());
+                                        const result = await dispatch(fetchAsyncGetLikesUser(post.id));
+                                        if(fetchAsyncGetLikesUser.rejected.match(result)){
+                                            await dispatch(fetchAsyncRefreshToken());
+                                            const restryResult = await dispatch(fetchAsyncGetLikesUser(post.id));
+                                            if(fetchAsyncGetLikesUser.rejected.match(restryResult)){
+                                                navigate("/auth/login");
+                                            }else if(fetchAsyncGetLikesUser.fulfilled.match(restryResult)){
+                                                dispatch(setOpenProfiles());
+                                                dispatch(setProfilesTitleLikes());
+                                            }
+                                        }else if(fetchAsyncGetLikesUser.fulfilled.match(result)){
+                                            dispatch(setOpenProfiles());
+                                            dispatch(setProfilesTitleLikes());
+                                        }
                                     }
                                 }} 
                             >

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -33,6 +33,7 @@ import {
     selectStep, 
 } from './roadmapSlice';
 import { 
+    fetchAsyncRefreshToken,
     selectMyProfile,
 } from '../Auth/authSlice';
 import styles from './Lookback.module.css'
@@ -43,6 +44,8 @@ const Lookback: React.FC = () => {
 
     const lookbacks = useSelector(selectLookbacks);
     const dispatch: AppDispatch = useDispatch();
+      let navigate = useNavigate();
+
 
     // interface idParams {id: string;}
     const { id } = useParams();
@@ -77,10 +80,21 @@ const Lookback: React.FC = () => {
       setDeleteOpen(false);
     };
 
-    const deleteLookback = ((lookbackId :string) =>{
-        dispatch(fetchAsyncDeleteLookBack(lookbackId));
-        dispatch(fetchLookBackDelete(lookbackId));
-        handleClose();
+    const deleteLookback = (async(lookbackId :string) =>{
+        const result = await dispatch(fetchAsyncDeleteLookBack(lookbackId));
+        if(fetchAsyncDeleteLookBack.rejected.match(result)){
+            await dispatch(fetchAsyncRefreshToken());
+            const retryResult = await dispatch(fetchAsyncDeleteLookBack(lookbackId));
+            if(fetchAsyncDeleteLookBack.rejected.match(retryResult)){
+                navigate(`/auth/login`);
+            }else if (fetchAsyncDeleteLookBack.fulfilled.match(retryResult)){
+                dispatch(fetchLookBackDelete(lookbackId));
+                handleClose();
+            }
+        }else if(fetchAsyncDeleteLookBack.fulfilled.match(result)){
+            dispatch(fetchLookBackDelete(lookbackId));
+            handleClose();
+        }
     })
 
     const editedLookback = (lookback: string) => {
@@ -177,12 +191,21 @@ const Lookback: React.FC = () => {
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetLookbacks(String(id)));
-            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
-            await dispatch(fetchAsyncGetStep(String(id)))
+            if(fetchAsyncGetLookbacks.rejected.match(result)){
+                await dispatch(fetchAsyncRefreshToken());
+                const retryResult = await dispatch(fetchAsyncGetLookbacks(String(id)));
+                if(fetchAsyncGetLookbacks.rejected.match(retryResult)){
+                    navigate(`/auth/login`);
+                }else if(fetchAsyncGetLookbacks.fulfilled.match(retryResult)){
+                    await dispatch(fetchAsyncGetStep(String(id)));
+                }
+            }else if(fetchAsyncGetLookbacks.fulfilled.match(result)){
+                await dispatch(fetchAsyncGetStep(String(id)));
+            }
         }
         func();
         // console.log()
-    }, [dispatch, id, selectedLookbackId, selectedLookbackLearned])
+    }, [dispatch, id])
     if(!lookbacks){
         return null
     }
@@ -266,18 +289,6 @@ const Lookback: React.FC = () => {
                                         {/* ▶︎{editedPreviewLookback(lookback.learned)} */}
                                     </div>
                                 </div>
-                                {/* <div>
-                                    <IconButton 
-                                        aria-label="delete" 
-                                        // className={classes.margin}
-                                        onClick={() => {
-                                            setSelectedLookbackId(lookback.id);
-                                            setSelectedLookbackLearned(lookback.learned);
-                                        }}
-                                    >
-                                        <ArrowRightIcon fontSize="small" />
-                                    </IconButton>
-                                </div> */}
                             </div>
                         ))
                     }

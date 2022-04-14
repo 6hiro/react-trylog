@@ -17,6 +17,7 @@ import Avatar from '@mui/material/Avatar';
 
 import { AppDispatch } from '../../../app/store';
 import {
+  fetchAsyncRefreshToken,
 //   selectMyUser,
   selectMyProfile
 } from '../Auth/authSlice';
@@ -34,7 +35,7 @@ import {
   setOpenPost
 } from '../Post/postSlice';
 import Post from '../../components/post/Post';
-import UpdatePost from "../../components/post/UpdatePost";
+// import UpdatePost from "../../components/post/UpdatePost";
 import styles from "./PostDetail.module.css";
 
 const PostDetail = () => {
@@ -55,8 +56,19 @@ const PostDetail = () => {
     
     dispatch(fetchPostStart());
     const result = await dispatch(fetchAsyncPostComment(packet));
-    dispatch(fetchPostEnd());
-    setComment("");
+    if(fetchAsyncPostComment.rejected.match(result)){
+      await dispatch(fetchAsyncRefreshToken());
+      const retryResult = await dispatch(fetchAsyncPostComment(packet));
+      if(fetchAsyncPostComment.rejected.match(retryResult)){
+        navigate("/auth/login");
+      }else if(fetchAsyncPostComment.fulfilled.match(retryResult)){
+        dispatch(fetchPostEnd());
+        setComment("");
+      }
+    }else if(fetchAsyncPostComment.fulfilled.match(result)){
+      dispatch(fetchPostEnd());
+      setComment("");
+    }
   };
 
   // 投稿削除の画面の表示
@@ -69,9 +81,19 @@ const PostDetail = () => {
   };
   // 投稿削除の処理
   const PostDelete = async() => {
-    dispatch(fetchAsyncDeletePost(id))
+    const result = await dispatch(fetchAsyncDeletePost(id));
+    if (fetchAsyncDeletePost.rejected.match(result)) {
+      await dispatch(fetchAsyncRefreshToken());
+      const retryResult = await dispatch(fetchAsyncDeletePost(id));
+      if(fetchAsyncDeletePost.rejected.match(retryResult)){
+        navigate("/auth/login");
+      }else if(fetchAsyncDeletePost.fulfilled.match(retryResult)){
+        navigate("/post/list")
+      }
+    }else if(fetchAsyncDeletePost.fulfilled.match(result)){
+      navigate("/post/list")
+    }
     // const res = await axios.delete(`/post/${id}`)
-    navigate("/post/list")
   }
 
   // 投稿更新の画面の表示
@@ -81,7 +103,17 @@ const PostDetail = () => {
   // 投稿更新の処理
   const deleteComment = async(commentId :string) =>{
     const result = await dispatch(fetchAsyncDeleteComment(commentId));
-    dispatch(fetchCommentDelete(commentId));
+    if (fetchAsyncDeleteComment.rejected.match(result)) {
+      await dispatch(fetchAsyncRefreshToken())
+      const retryResult = await dispatch(fetchAsyncDeleteComment(commentId));
+      if (fetchAsyncDeleteComment.rejected.match(retryResult)) {
+        navigate("/auth/login")
+      }else if(fetchAsyncDeleteComment.fulfilled.match(retryResult)){
+        dispatch(fetchCommentDelete(commentId));
+      }
+    }else if(fetchAsyncDeleteComment.fulfilled.match(result)){
+      dispatch(fetchCommentDelete(commentId));
+    }
   }
   // useEffect(()=>{
   //   const func = async () => {
@@ -92,8 +124,18 @@ const PostDetail = () => {
   useEffect(() => {
     const func = async () => {
       const result = await dispatch(fetchAsyncGetPost(id));
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
-      dispatch(fetchAsyncGetComments(id));
+      if(fetchAsyncGetPost.rejected.match(result)){
+        await dispatch(fetchAsyncRefreshToken())
+        const retryResult = await dispatch(fetchAsyncGetPost(id));
+        if(fetchAsyncGetPost.rejected.match(retryResult)){
+          navigate("/auth/login")
+        }else if(fetchAsyncGetPost.fulfilled.match(retryResult)){
+          dispatch(fetchAsyncGetComments(id));
+        }
+      }else if(fetchAsyncGetPost.fulfilled.match(result)){
+        dispatch(fetchAsyncGetComments(id));
+      }
+      // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
     //   console.log(id)
     }
     func();

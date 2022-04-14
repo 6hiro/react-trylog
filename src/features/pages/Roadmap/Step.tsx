@@ -36,6 +36,7 @@ import {
     fetchAsyncGetRoadmap
 } from './roadmapSlice';
 import { 
+    fetchAsyncRefreshToken,
     // fetchAsyncRefreshToken, 
     // setOpenLogIn,
     selectMyProfile,
@@ -93,9 +94,26 @@ const Step: React.FC = () => {
       setDeleteOpen(false);
     };
 
+    // const deleteStep = async(stepId :string) =>{
+    //     const result = await dispatch(fetchAsyncDeleteStep(stepId));
+    //     if(fetchAsyncDeleteStep.fulfilled.match(result)){
+    //         dispatch(fetchStepDelete(stepId));
+    //         handleClose();
+    //     }
+    // }
     const deleteStep = async(stepId :string) =>{
         const result = await dispatch(fetchAsyncDeleteStep(stepId));
-        if(fetchAsyncDeleteStep.fulfilled.match(result)){
+        if(fetchAsyncDeleteStep.rejected.match(result)){
+            await dispatch(fetchAsyncRefreshToken());
+            const retryResult = await dispatch(fetchAsyncDeleteStep(stepId));
+            if(fetchAsyncDeleteStep.rejected.match(retryResult)){
+                // dispatch(setOpenLogIn);
+                navigate(`/auth/login`);
+            }else if(fetchAsyncDeleteStep.fulfilled.match(retryResult)){
+                dispatch(fetchStepDelete(stepId));
+                handleClose();
+            }
+        }else if(fetchAsyncDeleteStep.fulfilled.match(result)){
             dispatch(fetchStepDelete(stepId));
             handleClose();
         }
@@ -108,9 +126,33 @@ const Step: React.FC = () => {
     const handleCloseChangeStepOrder = () => {
         setChangeStepOrderOpen(false)
     }
+    // const changeStepOrder = async() => {
+    //     const result = await dispatch(fetchAsyncChangeStepOrder({"steps":steps}));
+    //     if(fetchAsyncChangeStepOrder.fulfilled.match(result)){
+    //         handleCloseChangeStepOrder();
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     const func = async () => {
+    //         const result = await dispatch(fetchAsyncGetSteps(id));
+    //         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
+    //         await dispatch(fetchAsyncGetRoadmap(id));
+    //     }
+    //     func();
+    // }, [dispatch, id, selectedStepId, selectedStepToLearn, selectedStepIsCompleted])
+
     const changeStepOrder = async() => {
         const result = await dispatch(fetchAsyncChangeStepOrder({"steps":steps}));
-        if(fetchAsyncChangeStepOrder.fulfilled.match(result)){
+        if(fetchAsyncChangeStepOrder.rejected.match(result)){
+            await dispatch(fetchAsyncRefreshToken());
+            const retryResult = await dispatch(fetchAsyncChangeStepOrder({"steps":steps}));
+            if(fetchAsyncChangeStepOrder.rejected.match(retryResult)){
+                navigate(`/auth/login`);
+            }else if(fetchAsyncChangeStepOrder.fulfilled.match(retryResult)){
+                handleCloseChangeStepOrder();
+            }
+        }else if(fetchAsyncChangeStepOrder.fulfilled.match(result)){
             handleCloseChangeStepOrder();
         }
     }
@@ -118,11 +160,20 @@ const Step: React.FC = () => {
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetSteps(id));
-            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
             await dispatch(fetchAsyncGetRoadmap(id));
+            if(fetchAsyncGetSteps.rejected.match(result)){
+                await dispatch(fetchAsyncRefreshToken());
+                const retryResult = await dispatch(fetchAsyncGetSteps(id));
+                await dispatch(fetchAsyncGetRoadmap(id));
+                if(fetchAsyncGetSteps.rejected.match(retryResult)){
+                    // dispatch(setOpenLogIn);
+                    navigate(`/auth/login`);
+                }
+            }   
         }
         func();
     }, [dispatch, id, selectedStepId, selectedStepToLearn, selectedStepIsCompleted])
+
     if(!steps){
         return null
     }

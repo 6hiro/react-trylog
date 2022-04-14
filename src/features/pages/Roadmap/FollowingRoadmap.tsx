@@ -27,7 +27,7 @@ import {
     fetchAsyncGetFollowingsRoadmaps
 
 }from './roadmapSlice';
-import { selectMyProfile } from '../Auth/authSlice';
+import { fetchAsyncRefreshToken, selectMyProfile } from '../Auth/authSlice';
 import UpdateRoadmap from '../../components/roadmap/UpdateRoadmap';
 // import SearchRoadmap from './SearchRoadmap';
 import styles from './Roadmap.module.css'
@@ -71,12 +71,21 @@ const FollowingRoadmap: React.FC = () => {
   };
 
   const deleteRoadmap = async(roadmapId :string) => {
-      const result = await dispatch(fetchAsyncDeleteRoadmap(roadmapId));
-      if(fetchAsyncDeleteRoadmap.fulfilled.match(result)){
-          dispatch(fetchRoadmapDelete(roadmapId));
-          handleClose();
-      }
-  }
+    const result = await dispatch(fetchAsyncDeleteRoadmap(roadmapId));
+        if (fetchAsyncDeleteRoadmap.rejected.match(result)){
+            dispatch(fetchAsyncRefreshToken());
+            const retryResult = await dispatch(fetchAsyncDeleteRoadmap(roadmapId));
+            if (fetchAsyncDeleteRoadmap.rejected.match(retryResult)){
+                navigate(`/auth/login`);
+            }else if(fetchAsyncDeleteRoadmap.fulfilled.match(retryResult)){
+                dispatch(fetchRoadmapDelete(roadmapId));
+                handleClose();
+            }
+        }else if(fetchAsyncDeleteRoadmap.fulfilled.match(result)){
+            dispatch(fetchRoadmapDelete(roadmapId));
+            handleClose();
+        }
+    }
 
   const setOpenUpdateRoadmap = ((roadmap :any) => {
       setSelectedRoadmapId(roadmap.id)
@@ -90,6 +99,13 @@ const FollowingRoadmap: React.FC = () => {
     const func = async () => {
         if(String(word).length!==0){
             const result = await dispatch(fetchAsyncGetFollowingsRoadmaps());
+            if(fetchAsyncGetFollowingsRoadmaps.rejected.match(result)){
+              await dispatch(fetchAsyncRefreshToken());
+              const result = await dispatch(fetchAsyncGetFollowingsRoadmaps());
+              if(fetchAsyncGetFollowingsRoadmaps.rejected.match(result)){
+                navigate(`/auth/login`);
+              }
+            }
         }
     }
     func();
@@ -202,58 +218,40 @@ const FollowingRoadmap: React.FC = () => {
         )
     }
     <div className={styles.pagination}>
-    {roadmapPagenation.previous &&  
-      <div onClick={
-        async() => {
-          const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
-          if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
-          }
-        }
-        }
-      >
-        前へ
-      </div>
-    }
-  
-    {roadmapPagenation.next && 
-      <div onClick={
-        async() => {
-          const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
-            if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
-
-            
+        {roadmapPagenation.previous &&  
+            <div onClick={
+            async() => {
+                const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
+                if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
+                    const retryResult = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
+                    if (fetchAsyncGetRoadmapsMore.rejected.match(retryResult)) {
+                        navigate("/auth/login");
+                    }
+                }
             }
-          }
+            }
+            >
+            前へ
+            </div>
         }
-      >
-        次へ
-      </div>
-    }
-  </div>
-
-    <UpdateRoadmap roadmapId={selectedRoadmapId} title={selectedRoadmapTitle} overview={selectedRoadmapOverview} isPublic={selectedRoadmapIsPublic} />
-    
-    <Dialog
-        open={deleteOpen}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-    >
-        <DialogTitle id="alert-dialog-title">{"確認"}</DialogTitle>
-        <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-            {selectedRoadmapTitle} を削除しますか？
-        </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-        <Button onClick={() => {deleteRoadmap(selectedRoadmapId);}} color="primary">
-            はい
-        </Button>
-        <Button onClick={handleClose} color="primary" autoFocus>
-            いいえ
-        </Button>
-        </DialogActions>
-    </Dialog>
+        
+        {roadmapPagenation.next && 
+            <div onClick={
+            async() => {
+                const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
+                if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
+                    const retryResult = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
+                    if (fetchAsyncGetRoadmapsMore.rejected.match(retryResult)) {
+                        navigate("/auth/login");
+                    }
+                }
+                }
+            }
+            >
+            次へ
+            </div>
+        }
+    </div>
 </div>
   )
 }

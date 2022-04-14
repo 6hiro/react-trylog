@@ -9,7 +9,7 @@ export const fetchAsyncLogin = createAsyncThunk(
   // actionの名前
   "auth/login",
   async (authen: PROPS_AUTHEN) => {
-    const res = await axios.post("login/", authen, { withCredentials: true });
+    const res = await axios.post("login/", authen);
     return res.data;
   }
 );
@@ -17,6 +17,14 @@ export const fetchAsyncLogout = createAsyncThunk(
   "auth/logout",
   async () => {
     const res = await axios.post("logout/", {});
+    return res.data;
+  }
+);
+export const fetchAsyncRefreshToken = createAsyncThunk(
+  "auth/refreshToken",
+  async () => {
+    const refreshJWT = `{"refresh": "${localStorage.refreshJWT}"}`
+    const res = await axios.post(`refresh/`, refreshJWT);
     return res.data;
   }
 );
@@ -42,7 +50,7 @@ export const fetchAsyncResetPassword = createAsyncThunk(
   }
 );
 export const fetchAsyncGetMyProf = createAsyncThunk("myprofile/get", async () => {
-  const res = await axios.get("myprofile/", { withCredentials: true });
+  const res = await axios.get("myprofile/");
   return res.data[0];
 });
 export const fetchAsyncUpdateProf = createAsyncThunk(
@@ -216,13 +224,23 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(fetchAsyncLogin.fulfilled, (state, action) => {
       // console.log(action.payload.token)
-      localStorage.setItem("localJWT", action.payload.token);
+      localStorage.setItem("localJWT", action.payload.tokens.accessToken);
+      localStorage.setItem("refreshJWT", action.payload.tokens.refreshToken);
       // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
-      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.token}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.tokens.accessToken}`;
     });
-    builder.addCase(fetchAsyncLogout.fulfilled, (state, action) => {
+    builder.addCase(fetchAsyncRefreshToken.fulfilled, (state, action) => {
       localStorage.removeItem("localJWT");
       // localStorage.removeItem("refreshJWT");
+      localStorage.setItem("localJWT", action.payload.token);
+      axios.defaults.headers.common['Authorization'] = `Bearer ${action.payload.token}`;
+      // localStorage.setItem("refreshJWT", action.payload.refresh);
+    });
+    builder.addCase(fetchAsyncLogout.fulfilled, (state, action) => {
+      if(action.payload.message==='success'){
+        localStorage.removeItem("localJWT");
+        localStorage.removeItem("refreshJWT");
+      }
       // localStorage.setItem("localJWT", action.payload.access);
       // localStorage.setItem("refreshJWT", action.payload.refresh);
     });

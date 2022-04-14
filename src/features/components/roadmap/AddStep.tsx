@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -17,15 +18,13 @@ import {
     fetchPostEnd,
     fetchAsyncNewStep,
 } from '../../pages/Roadmap/roadmapSlice';
-import {
-    // fetchAsyncRefreshToken, 
-    // setOpenLogIn 
-} from '../../pages/Auth/authSlice';
+import { fetchAsyncRefreshToken } from '../../pages/Auth/authSlice';
 import styles from "./AddStep.module.css";
 
 
 const AddStep: React.FC<{ roadmapId: string; }> = (props) => {
     const dispatch: AppDispatch = useDispatch();
+    let navigate = useNavigate();
     const isLoadingRoadmap = useSelector(selectIsLoadingRoadmap);
 
     return (
@@ -40,8 +39,17 @@ const AddStep: React.FC<{ roadmapId: string; }> = (props) => {
             onSubmit={async (values, {resetForm}) => {
                 dispatch(fetchPostStart());
                 const result = await dispatch(fetchAsyncNewStep(values));
+                if(fetchAsyncNewStep.rejected.match(result)){
+                    await dispatch(fetchAsyncRefreshToken())
+                    const retryreysult = await dispatch(fetchAsyncNewStep(values));
+                    if(fetchAsyncNewStep.rejected.match(retryreysult)){
+                        navigate("/auth/login");
+                    }else if (fetchAsyncNewStep.fulfilled.match(retryreysult)){
+                        dispatch(fetchPostEnd());
+                        resetForm();
+                    }
 
-                if (fetchAsyncNewStep.fulfilled.match(result)){
+                }else if (fetchAsyncNewStep.fulfilled.match(result)){
                     dispatch(fetchPostEnd());
                     resetForm()
                 }

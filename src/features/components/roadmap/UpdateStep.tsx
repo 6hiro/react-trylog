@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import Modal from "react-modal";
 import { Formik } from "formik";
@@ -22,6 +23,7 @@ import {
 }from '../../pages/Roadmap/roadmapSlice';
 
 import styles from "./UpdateStep.module.css";
+import { fetchAsyncRefreshToken } from '../../pages/Auth/authSlice';
 
 
 // moduleのstyleを定義
@@ -42,6 +44,8 @@ const customStyles = {
 
 const UpdateStep: React.FC<{ stepId: string; toLearn: string; isCompleted: string; }> = (props) => {
   Modal.setAppElement("#root");
+  let navigate = useNavigate();
+
   const openRoadmap = useSelector(selectOpenRoadmap);
   const isLoadingRoadmap = useSelector(selectIsLoadingRoadmap);
   const dispatch: AppDispatch = useDispatch();
@@ -64,13 +68,20 @@ const UpdateStep: React.FC<{ stepId: string; toLearn: string; isCompleted: strin
             }}
             onSubmit={async (values) => {
                 dispatch(fetchPostStart());
-                const postResult = await dispatch(fetchAsyncUpdateStep(values));
-
-                if (fetchAsyncUpdateStep.fulfilled.match(postResult)) {
-                    await dispatch(fetchPostEnd());
-                    await dispatch(resetOpenRoadmap());
-                }else{
+                const result = await dispatch(fetchAsyncUpdateStep(values));
+                if (fetchAsyncUpdateStep.rejected.match(result)) {
+                  await dispatch(fetchAsyncRefreshToken());
+                  const retryResult = await dispatch(fetchAsyncUpdateStep(values));
+                  if (fetchAsyncUpdateStep.rejected.match(retryResult)) {
                     dispatch(fetchPostEnd());
+                    navigate("/auth/login");
+                  }else if(fetchAsyncUpdateStep.fulfilled.match(retryResult)) {
+                    dispatch(fetchPostEnd());
+                    dispatch(resetOpenRoadmap());
+                  }
+                }else if(fetchAsyncUpdateStep.fulfilled.match(result)) {
+                  dispatch(fetchPostEnd());
+                  dispatch(resetOpenRoadmap());
                 }
             }}
             validationSchema={

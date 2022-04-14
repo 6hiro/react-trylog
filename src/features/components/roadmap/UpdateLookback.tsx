@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from "react-redux";
 import Modal from "react-modal";
 import { Formik } from "formik";
@@ -20,6 +21,7 @@ import {
 } from '../../pages/Roadmap/roadmapSlice';
 
 import styles from "./UpdateStep.module.css";
+import { fetchAsyncRefreshToken } from '../../pages/Auth/authSlice';
 
 
 // moduleのstyleを定義
@@ -41,6 +43,7 @@ const customStyles = {
 
 const UpdateLookback: React.FC<{ lookbackId: string; learned: string; }> = (props) => {
   Modal.setAppElement("#root");
+  let navigate = useNavigate();
   const openRoadmap = useSelector(selectOpenRoadmap);
   const isLoadingRoadmap = useSelector(selectIsLoadingRoadmap);
   const dispatch: AppDispatch = useDispatch();
@@ -62,13 +65,20 @@ const UpdateLookback: React.FC<{ lookbackId: string; learned: string; }> = (prop
             }}
             onSubmit={async (values) => {
                 dispatch(fetchPostStart());
-                const postResult = await dispatch(fetchAsyncUpdateLookback(values));
-
-                if (fetchAsyncUpdateLookback.fulfilled.match(postResult)) {
-                    await dispatch(fetchPostEnd());
-                    await dispatch(resetOpenRoadmap());
-                }else{
+                const result = await dispatch(fetchAsyncUpdateLookback(values));
+                if (fetchAsyncUpdateLookback.rejected.match(result)) {
+                  await dispatch(fetchAsyncRefreshToken());
+                  const retryResult = await dispatch(fetchAsyncUpdateLookback(values));
+                  if (fetchAsyncUpdateLookback.rejected.match(retryResult)) {
                     dispatch(fetchPostEnd());
+                    navigate("/auth/login");
+                  }else if (fetchAsyncUpdateLookback.fulfilled.match(retryResult)) {
+                    dispatch(fetchPostEnd());
+                    dispatch(resetOpenRoadmap());
+                  }
+                }else if (fetchAsyncUpdateLookback.fulfilled.match(result)) {
+                  dispatch(fetchPostEnd());
+                  dispatch(resetOpenRoadmap());
                 }
             }}
             validationSchema={
@@ -123,7 +133,7 @@ const UpdateLookback: React.FC<{ lookbackId: string; learned: string; }> = (prop
                             color="primary"
                             disabled={!isValid}
                             type="submit"
-                        >投稿する</Button >                    
+                        >変更</Button >                    
                     </div>
                     </div>
                 </form>

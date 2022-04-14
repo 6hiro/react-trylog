@@ -9,6 +9,7 @@ import {
     logOut,
     fetchAsyncLogout,
     fetchAsyncGetMyProf,
+    fetchAsyncRefreshToken,
 } from "../../pages/Auth/authSlice";
 import {
     fetchAsyncGetSearchedPosts,
@@ -26,12 +27,19 @@ const Layout: React.FC = () => {
     useEffect(()=>{
         // ログイン済みかどうか検証
         const func = async () => {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
-            const result = await dispatch(fetchAsyncGetMyProf());
-            // if(fetchAsyncGetMyProf.rejected.match(result)){
-            //   navigate("/auth/login");
-            // }
-            // navigate("/")
+            // axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.localJWT}`;
+            if(localStorage.localJWT){    
+              const result = await dispatch(fetchAsyncGetMyProf());
+                if(fetchAsyncGetMyProf.rejected.match(result)){
+                await dispatch(fetchAsyncRefreshToken());
+                    const retryResult = await dispatch(fetchAsyncGetMyProf());
+                    if(fetchAsyncGetMyProf.rejected.match(retryResult)){
+                        navigate("/auth/login");
+                    }
+                }
+            }else{
+                navigate("/auth/login");
+            }
         };
         func();
     }, [dispatch])

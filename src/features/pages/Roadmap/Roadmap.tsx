@@ -25,34 +25,15 @@ import {
     selectRoadmapPagenation,
     fetchAsyncGetRoadmapsMore,
 }from './roadmapSlice';
-import { selectMyProfile } from '../Auth/authSlice';
+import { fetchAsyncRefreshToken, selectMyProfile } from '../Auth/authSlice';
 import UpdateRoadmap from '../../components/roadmap/UpdateRoadmap';
 // import SearchRoadmap from './SearchRoadmap';
 import styles from './Roadmap.module.css'
-
-// const useStyles = makeStyles((theme: Theme) =>
-//   createStyles({
-//     margin: {
-//       margin: theme.spacing(0.5),
-//     },
-//     root: {
-//         display: 'flex',
-//         '& > *': {
-//             margin: theme.spacing(0.2),
-//         },
-//     },
-//     small: {
-//         width: theme.spacing(2.5),
-//         height: theme.spacing(2.5),
-//     },
-//   }),
-// );
 
 const Roadmap: React.FC = () => {
     // const classes = useStyles();
     const dispatch: AppDispatch = useDispatch();
     let navigate = useNavigate();
-    interface idParams {id: string;}
     const { id } = useParams();
 
     const myProfile = useSelector(selectMyProfile);
@@ -87,12 +68,20 @@ const Roadmap: React.FC = () => {
 
     const deleteRoadmap = async(roadmapId :string) => {
         const result = await dispatch(fetchAsyncDeleteRoadmap(roadmapId));
-        if(fetchAsyncDeleteRoadmap.fulfilled.match(result)){
+        if(fetchAsyncDeleteRoadmap.rejected.match(result)){
+            await dispatch(fetchAsyncRefreshToken());
+            const retryResult = await dispatch(fetchAsyncDeleteRoadmap(roadmapId));
+            if(fetchAsyncDeleteRoadmap.rejected.match(retryResult)){
+                navigate(`/auth/login`);
+            }else if(fetchAsyncDeleteRoadmap.fulfilled.match(retryResult)){
+                dispatch(fetchRoadmapDelete(roadmapId));
+                handleClose();                
+            }
+        }else if(fetchAsyncDeleteRoadmap.fulfilled.match(result)){
             dispatch(fetchRoadmapDelete(roadmapId));
             handleClose();
         }
     }
-
     const setOpenUpdateRoadmap = ((roadmap :any) => {
         setSelectedRoadmapId(roadmap.id)
         setSelectedRoadmapTitle(roadmap.title)
@@ -104,6 +93,14 @@ const Roadmap: React.FC = () => {
     useEffect(() => {
         const func = async () => {
             const result = await dispatch(fetchAsyncGetOwnRoadmaps(id));
+            if(fetchAsyncGetOwnRoadmaps.rejected.match(result)){
+                await dispatch(fetchAsyncRefreshToken());
+                const retryResult = await dispatch(fetchAsyncGetOwnRoadmaps(id));
+                if(fetchAsyncGetOwnRoadmaps.rejected.match(retryResult)){
+                    // dispatch(setOpenLogIn());
+                    navigate("/auth/login");
+                }
+            }
         };
         func();
     }, [dispatch, id])
@@ -120,7 +117,13 @@ const Roadmap: React.FC = () => {
                     onClick={async() => {
                         const result = await dispatch(fetchAsyncGetRoadmaps());
                         if(fetchAsyncGetRoadmaps.rejected.match(result)){
-
+                            await dispatch(fetchAsyncRefreshToken());
+                            const retryResult = await dispatch(fetchAsyncGetRoadmaps());
+                            if(fetchAsyncGetRoadmaps.rejected.match(retryResult)){
+                                navigate("/auth/login");
+                            }else if(fetchAsyncGetRoadmaps.fulfilled.match(retryResult)){
+                                handleIsRoadmaps();
+                            }
                         }else if(fetchAsyncGetRoadmaps.fulfilled.match(result)){
                             handleIsRoadmaps();
                         }
@@ -135,7 +138,13 @@ const Roadmap: React.FC = () => {
                     onClick={async() => {
                         const result = await dispatch(fetchAsyncGetOwnRoadmaps(id));
                         if(fetchAsyncGetOwnRoadmaps.rejected.match(result)){
-
+                            await dispatch(fetchAsyncRefreshToken());
+                            const retryResult = await dispatch(fetchAsyncGetOwnRoadmaps(id));
+                            if(fetchAsyncGetOwnRoadmaps.rejected.match(retryResult)){
+                                navigate("/auth/login");
+                            }else if(fetchAsyncGetOwnRoadmaps.fulfilled.match(retryResult)){
+                                handleIsUserRoadmaps();
+                            }
                         }else if(fetchAsyncGetOwnRoadmaps.fulfilled.match(result)){
                             handleIsUserRoadmaps();
                         }
@@ -226,9 +235,13 @@ const Roadmap: React.FC = () => {
             {roadmapPagenation.previous &&  
               <div onClick={
                 async() => {
-                  const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
-                  if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
-                  }
+                    const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
+                    if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
+                        const retryResult = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.previous));
+                        if (fetchAsyncGetRoadmapsMore.rejected.match(retryResult)) {
+                            navigate("/auth/login");
+                        }
+                    }
                 }
                 }
               >
@@ -239,10 +252,12 @@ const Roadmap: React.FC = () => {
             {roadmapPagenation.next && 
               <div onClick={
                 async() => {
-                  const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
+                    const result = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
                     if (fetchAsyncGetRoadmapsMore.rejected.match(result)) {
-    
-                    
+                        const retryResult = await dispatch(fetchAsyncGetRoadmapsMore(roadmapPagenation.next));
+                        if (fetchAsyncGetRoadmapsMore.rejected.match(retryResult)) {
+                            navigate("/auth/login");
+                        }
                     }
                   }
                 }
@@ -267,7 +282,7 @@ const Roadmap: React.FC = () => {
                 </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={() => {deleteRoadmap(selectedRoadmapId);}} color="primary">
+                <Button onClick={async() => {deleteRoadmap(selectedRoadmapId);}} color="primary">
                     はい
                 </Button>
                 <Button onClick={handleClose} color="primary" autoFocus>
