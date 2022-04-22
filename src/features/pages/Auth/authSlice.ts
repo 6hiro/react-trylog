@@ -262,10 +262,12 @@ export const authSlice = createSlice({
     });
     builder.addCase(fetchAsyncFollowUnFollow.fulfilled, (state, action) => {
       if(action.payload.result==='follow'){
+        state.myprofile.countFollowing += 1;
         state.profile.countFollower += 1 ;
         state.profile.isFollowed = true;
       }
       else if(action.payload.result==='unfollow'){
+        state.myprofile.countFollowing -= 1;
         state.profile.countFollower -= 1;
         state.profile.isFollowed = false;
       }
