@@ -116,7 +116,7 @@ const Post: React.FC<{
                   }
                   return <iframe 
                           id="inline-frame" 
-                          width="320" height="180" 
+                          width="240" height="135" 
                           title="YouTube video player" 
                           frameBorder="0"
                           // src={value}
@@ -130,7 +130,7 @@ const Post: React.FC<{
                   }
                   return <iframe 
                           id="inline-frame" 
-                          width="320" height="180" 
+                          width="240" height="135" 
                           title="YouTube video player" 
                           frameBorder="0"
                           // src={value}
@@ -144,7 +144,7 @@ const Post: React.FC<{
                   }
                   return <iframe 
                           id="inline-frame" 
-                          width="320" height="180" 
+                          width="240" height="135" 
                           title="YouTube video player" 
                           frameBorder="0"
                           // src={value}
