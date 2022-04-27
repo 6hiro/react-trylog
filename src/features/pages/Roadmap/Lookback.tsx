@@ -98,7 +98,7 @@ const Lookback: React.FC = () => {
     })
 
     const editedLookback = (lookback: string) => {
-        // 改行、半角スペース、全角スペースをを明示化（特殊文字と同じ文字列に）する
+        // 改行、半角スペース、全角スペースをを明示化（特殊文字の名前と同じ文字列に）する
         let lookbackText = lookback.replaceAll(/\r?\n/g, '&nbsp;').replaceAll(' ', '&ensp;').replaceAll('　', '&emsp;').replaceAll('**', '&fontsize;')
         // 改行、半角スペース、または、全角スペースでテキストを分割し、リスト化する。（）を使うことで改行などもリストの要素にする
         let lookbackList = lookbackText.split(/(&fontsize;|&nbsp;|&ensp;|&emsp;)/g)
@@ -120,7 +120,7 @@ const Lookback: React.FC = () => {
                     return <span className={styles.red} key={index}>{value.slice(2)}</span>
                 }else if(value.slice(0,2)==='b#'){
                     return <span className={styles.blue} key={index}>{value.slice(2)}</span>
-                }else if(value.slice(0,2)==='b#'){
+                }else if(value.slice(0,2)==='g#'){
                     return <span className={styles.green} key={index}>{value.slice(2)}</span>
                 }else if(value==='&nbsp;'){
                     // 改行の要素

@@ -48,10 +48,10 @@ const AddRoadmap: React.FC = () => {
             if (fetchAsyncNewRoadmap.rejected.match(result)) {
               await dispatch(fetchAsyncRefreshToken())
               const retryResult = await dispatch(fetchAsyncNewRoadmap(values));
-              if (fetchAsyncNewRoadmap.rejected.match(result)) {
+              if (fetchAsyncNewRoadmap.rejected.match(retryResult)) {
                 dispatch(fetchPostEnd());
                 navigate(`/auth/login`);
-              }else if (fetchAsyncNewRoadmap.fulfilled.match(result)) {
+              }else if (fetchAsyncNewRoadmap.fulfilled.match(retryResult)) {
                 dispatch(fetchPostEnd());
                 navigate(`/roadmap/user/${profile.user.id}`);
               }

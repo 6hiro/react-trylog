@@ -79,12 +79,12 @@ const Post: React.FC<{
         // タグの前に「#」を付ける
         const tagNameList = tags.map((tag)=> `#${tag.name}`)
     
-        // 改行、半角スペース、全角スペースをを「特殊文字と同じ文字」に変更
+        // 改行、半角スペース、全角スペースをを「特殊文字の名前と同じ文字列」に変更
         let postText = post
             .replaceAll(/\r?\n/g, '&nbsp;')
             .replaceAll(' ', '&ensp;')
             .replaceAll('　', '&emsp;')
-        // 改行、半角スペース、または、全角スペースの「特殊文字と同じ文字」でテキストを分割し、リスト化する。（）を使うことで改行などもリストの要素にする
+        // 改行、半角スペース、または、全角スペースの「特殊文字の名前と同じ文字列」でテキストを分割し、リスト化する。
         let postList = postText.split(/(&nbsp;|&ensp;|&emsp;)/g)
         
         // 表示するテキストを生成
@@ -110,51 +110,51 @@ const Post: React.FC<{
                 // 全角スペースの要素
                 return <span key={index}>&emsp;</span>
             }else if(value.slice(0, 8)==='https://' || value.slice(0, 7)==='http://'){
-                // if(value.slice(0, 32)==='https://www.youtube.com/watch?v='){
-                //   if(value.indexOf('&')!==-1){
-                //     value=value.split('&')[0]
-                //   }
-                //   return <iframe 
-                //           id="inline-frame" 
-                //           width="320" height="180" 
-                //           title="YouTube video player" 
-                //           frameBorder="0"
-                //           // src={value}
-                //           src={`https://www.youtube.com/embed/${value.slice(32)}`}
-                //           allowFullScreen
-                //           key={index}
-                //         ></iframe>
-                // }else if(value.slice(0, 30)==='https://m.youtube.com/watch?v='){
-                //   if(value.indexOf('&')!==-1){
-                //     value=value.split('&')[0]
-                //   }
-                //   return <iframe 
-                //           id="inline-frame" 
-                //           width="320" height="180" 
-                //           title="YouTube video player" 
-                //           frameBorder="0"
-                //           // src={value}
-                //           src={`https://www.youtube.com/embed/${value.slice(30)}`}
-                //           allowFullScreen
-                //           key={index}
-                //         ></iframe>
-                // }else if(value.slice(0, 17)==='https://youtu.be/'){
-                //   if(value.indexOf('&')!==-1){
-                //     value=value.split('&')[0]
-                //   }
-                //   return <iframe 
-                //           id="inline-frame" 
-                //           width="320" height="180" 
-                //           title="YouTube video player" 
-                //           frameBorder="0"
-                //           // src={value}
-                //           src={`https://www.youtube.com/embed/${value.slice(17)}`}
-                //           allowFullScreen
-                //           key={index}
-                //         ></iframe>
-                // }else{
+                if(value.slice(0, 32)==='https://www.youtube.com/watch?v='){
+                  if(value.indexOf('&')!==-1){
+                    value=value.split('&')[0]
+                  }
+                  return <iframe 
+                          id="inline-frame" 
+                          width="320" height="180" 
+                          title="YouTube video player" 
+                          frameBorder="0"
+                          // src={value}
+                          src={`https://www.youtube.com/embed/${value.slice(32)}`}
+                          allowFullScreen
+                          key={index}
+                        ></iframe>
+                }else if(value.slice(0, 30)==='https://m.youtube.com/watch?v='){
+                  if(value.indexOf('&')!==-1){
+                    value=value.split('&')[0]
+                  }
+                  return <iframe 
+                          id="inline-frame" 
+                          width="320" height="180" 
+                          title="YouTube video player" 
+                          frameBorder="0"
+                          // src={value}
+                          src={`https://www.youtube.com/embed/${value.slice(30)}`}
+                          allowFullScreen
+                          key={index}
+                        ></iframe>
+                }else if(value.slice(0, 17)==='https://youtu.be/'){
+                  if(value.indexOf('&')!==-1){
+                    value=value.split('&')[0]
+                  }
+                  return <iframe 
+                          id="inline-frame" 
+                          width="320" height="180" 
+                          title="YouTube video player" 
+                          frameBorder="0"
+                          // src={value}
+                          src={`https://www.youtube.com/embed/${value.slice(17)}`}
+                          allowFullScreen
+                          key={index}
+                        ></iframe>
+                }else{
                     return <a href={value} key={index}>{value}</a>
-                // }
+                }
             }else{
                 return <span key={index}>{value}</span>
                 // return null
